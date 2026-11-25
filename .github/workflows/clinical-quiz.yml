@@ -1,0 +1,60 @@
+name: Clinical Quiz checks
+
+on:
+  push:
+    branches: [develop]
+    paths:
+      - '.github/workflows/clinical-quiz.yml'
+      - 'clinical-quiz/**'
+      - 'nkhkjjhkkjjh.html'
+      - 'scripts/**'
+      - 'tests/**'
+      - 'package*.json'
+  pull_request:
+    branches: [develop]
+    paths:
+      - '.github/workflows/clinical-quiz.yml'
+      - 'clinical-quiz/**'
+      - 'nkhkjjhkkjjh.html'
+      - 'scripts/**'
+      - 'tests/**'
+      - 'package*.json'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    name: Verify on ${{ matrix.engine }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        engine: [chromium, webkit]
+    env:
+      QUIZ_ENGINE: ${{ matrix.engine }}
+      QUIZ_SCREENSHOTS: test-results/screenshots
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - run: git diff --exit-code -- clinical-quiz/index.html
+      - run: npx playwright install --with-deps "${QUIZ_ENGINE}"
+      - name: Run data integrity and browser tests
+        shell: bash
+        run: |
+          mkdir -p test-results
+          npm test | tee test-results/test.log
+      - name: Save test evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: clinical-quiz-${{ matrix.engine }}
+          path: test-results/
+          if-no-files-found: ignore
