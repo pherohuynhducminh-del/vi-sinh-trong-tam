@@ -33,3 +33,54 @@ button,select,input:not([type=checkbox]){min-height:44px}button:focus-visible,se
 #mobileJump{display:none}body.focus #mobileJump{display:inline-block}body.focus .side.jump-open{display:block!important}body.focus .prefs{display:flex!important}body.focus .prefs>*{display:none}body.focus .prefs #examAction,body.focus .prefs #timer{display:inline-flex}body.focus:not(.exam-running) .prefs{display:none!important}
 @media(max-width:820px){header{position:relative}.nav button{min-width:100px}.toolbar input,.toolbar select,.prefs select{font-size:16px;min-width:0}.toolbar #search,.toolbar #topicFilter{flex:1 1 100%}.prefs #examTopic{width:100%;min-width:0}.grid{grid-template-columns:repeat(auto-fit,minmax(44px,1fr))}.number{min-height:44px}.side:not(.jump-open){display:none}#mobileJump{display:inline-block}.controls{position:sticky;bottom:0;z-index:3;background:var(--surface);padding:8px 0 max(8px,env(safe-area-inset-bottom));box-shadow:0 -4px 12px #0000000a}.controls button{min-width:0;padding:8px 5px}.exam-nav{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:8px}.exam-nav button{flex:1 1 150px}}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{transition:none!important;scroll-behavior:auto!important}}
+
+/* Focus Touch applies only while Tập trung is active. */
+body.focus > header {
+  position: sticky;
+  top: 0;
+  box-shadow: none;
+}
+body.focus .head,
+body.focus .main {
+  max-width: 760px;
+}
+body.focus .brand .tag,
+body.focus .main > .stats,
+body.focus .main > .progress,
+body.focus #quizArea .hint,
+body.focus > details {
+  display: none;
+}
+body.focus #quizArea {
+  grid-template-columns: minmax(0, 1fr);
+}
+body.focus #quizArea > .card:first-child {
+  padding: 8px 0;
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+}
+body.focus #quizArea .question {
+  font-size: clamp(1.12rem, 2.5vw, 1.35rem);
+  line-height: 1.55;
+}
+body.focus #quizArea .opt {
+  min-height: 58px;
+  padding: 14px;
+  touch-action: manipulation;
+  transition: none;
+}
+body.focus #quizArea .controls {
+  position: sticky;
+  bottom: 0;
+  z-index: 4;
+  background: var(--bg);
+  padding: 10px 0 max(10px, env(safe-area-inset-bottom));
+}
+#focusExplainBtn {
+  margin-top: 10px;
+  min-height: 44px;
+}
+.focus-explanation-collapsed {
+  display: none;
+}

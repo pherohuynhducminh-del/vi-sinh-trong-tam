@@ -61,4 +61,31 @@ function syncMobileUI(){document.body.classList.toggle('exam-running',S.examActi
 function closeJump(){jumpSide.classList.remove('jump-open');jumpButton.setAttribute('aria-expanded','false');}
 jumpButton.onclick=()=>{let open=jumpSide.classList.toggle('jump-open');jumpButton.setAttribute('aria-expanded',String(open));if(open)jumpSide.scrollIntoView({block:'start'});};
 $('questionGrid').addEventListener('click',e=>{if(e.target.closest('button')){closeJump();$('qTitle').scrollIntoView({block:'start'});}});
-const originalRenderMobile=render;render=function(){originalRenderMobile();syncMobileUI();};syncMobileUI();
+const focusExplainBtn = $('focusExplainBtn');
+const explanationPanel = $('explanationPanel');
+let openExplanationId = null;
+
+function syncFocusExplanation() {
+  const available = P.focus && !$('quizArea').classList.contains('hidden') &&
+    !explanationPanel.classList.contains('hidden');
+  if (!available || openExplanationId !== S.current) openExplanationId = null;
+  const open = available && openExplanationId === S.current;
+  focusExplainBtn.hidden = !available;
+  focusExplainBtn.textContent = open ? 'Ẩn giải thích' : 'Xem giải thích';
+  focusExplainBtn.setAttribute('aria-expanded', String(open));
+  explanationPanel.classList.toggle('focus-explanation-collapsed', available && !open);
+}
+
+focusExplainBtn.onclick = () => {
+  openExplanationId = openExplanationId === S.current ? null : S.current;
+  syncFocusExplanation();
+};
+
+const originalRenderMobile = render;
+render = function () {
+  originalRenderMobile();
+  syncMobileUI();
+  syncFocusExplanation();
+};
+syncMobileUI();
+syncFocusExplanation();
