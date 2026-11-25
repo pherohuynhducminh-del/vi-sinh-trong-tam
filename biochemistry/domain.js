@@ -9,15 +9,26 @@ function matchesSearch(q,t){return !t||(/^(?:cau\s*)?\d+$/.test(t)?q.id===Number
 function topicList(){return [...new Set(QUESTIONS.map(topicFor))]}
 
 const questionIndex=new Map(QUESTIONS.map(q=>[q.id,q]));
-function activeIds(){if(S.mode==='flashcards')return S.session||[];if(S.mode==='exam')return S.examIds;if(S.mode==='review')return [...new Set([...S.wrong,...(S.submitted&&S.reviewResolved===S.current?[S.current]:[])])];if(S.session?.length)return S.session;return QUESTIONS.map(q=>q.id)}
+function activeIds() {
+  if (S.mode === 'flashcards') return S.session || [];
+  if (S.mode === 'exam') return S.examIds;
+  return learningActive() ? S.learning.ids : [];
+}
 function currentQ(){return qBy(S.current)||QUESTIONS[0]}
-function currentAnswer(q){return S.mode==='exam'?S.examAnswers[q.id]:S.mode==='review'?(Object.prototype.hasOwnProperty.call(S.reviewAnswers||{},q.id)?S.reviewAnswers[q.id]:S.answers[q.id]):S.answers[q.id]}
+function currentAnswer(q) {
+  return S.mode === 'exam' ? S.examAnswers[q.id] : learningActive() ? learningDraft(q) : undefined;
+}
 function hasAnswer(a){return a!=null&&(!Array.isArray(a)||a.length>0)}
 function isAnswered(q){return hasAnswer(currentAnswer(q))}
 function normalizedKey(q){let k=getKey(q);return k==null?null:(Array.isArray(k)?k:[k]).slice().sort()}
-function scoreQ(q){let k=normalizedKey(q),a=currentAnswer(q);if(!k||!hasAnswer(a))return null;if(q.multi)return Array.isArray(a)&&JSON.stringify([...a].sort())===JSON.stringify(k);return k.includes(a)}
-function recordResult(q){let result=scoreQ(q);S.reviewAnswers=S.reviewAnswers||{};if(result===true){if(S.mode==='review'){S.answers[q.id]=currentAnswer(q);S.reviewResolved=q.id;}S.wrong=S.wrong.filter(id=>id!==q.id);delete S.reviewAnswers[q.id]}else if(result===false){if(!S.wrong.includes(q.id))S.wrong.push(q.id);S.reviewAnswers[q.id]=currentAnswer(q)}}
-function scoreSaved(q){let k=normalizedKey(q),a=S.answers[q.id];if(!k||!hasAnswer(a))return null;if(q.multi)return Array.isArray(a)&&JSON.stringify([...a].sort())===JSON.stringify(k);return k.includes(a)}
-function scoreQExam(q){let k=normalizedKey(q),a=S.examAnswers[q.id];if(!k||!hasAnswer(a))return null;if(q.multi)return Array.isArray(a)&&JSON.stringify([...a].sort())===JSON.stringify(k);return k.includes(a)}
+function scoreAnswer(q, answer) {
+  const key = normalizedKey(q);
+  if (!key || !hasAnswer(answer)) return null;
+  if (q.multi) return Array.isArray(answer) && JSON.stringify([...answer].sort()) === JSON.stringify(key);
+  return key.includes(answer);
+}
+function scoreQ(q) { return scoreAnswer(q, currentAnswer(q)); }
+function scoreSaved(q) { return scoreAnswer(q, S.answers[q.id]); }
+function scoreQExam(q) { return scoreAnswer(q, S.examAnswers[q.id]); }
 let timer=null,examRemaining=0;
 const qBy=id=>questionIndex.get(Number(id)),getKey=q=>KEYS[q.id]??null;
