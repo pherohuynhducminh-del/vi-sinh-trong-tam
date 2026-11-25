@@ -37,3 +37,24 @@ export function scopeRecords(records, strategy, progress, now = Date.now()) {
   });
   return records;
 }
+
+export const coverage = [[1], [1, 2], [1, 2, 3], [1, 2, 3, 4]];
+export const inTiers = (records, tiers) => records.filter(q => tiers.includes(q.tier));
+
+export function tierBreakdown(records, progress) {
+  return coverage.at(-1).map(tier => {
+    const subset = inTiers(records, [tier]);
+    return { tier, total: subset.length, ...scopeStatistics(subset, progress) };
+  });
+}
+
+export function rankedTopics(nodes, criterion, progress) {
+  const ranked = nodes.map(node => {
+    const tier1 = inTiers(node.records, [1]).length;
+    const stats = scopeStatistics(node.records, progress);
+    const values = { tier1, focus: node.records.filter(q => q.tier < 4).length,
+      ratio: tier1 / node.records.length, unseen: stats.unseen, wrong: stats.wrong };
+    return { ...node, value: values[criterion] };
+  });
+  return ranked.sort((a, b) => b.value - a.value);
+}

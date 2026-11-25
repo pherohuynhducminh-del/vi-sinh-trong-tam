@@ -1,4 +1,4 @@
-import { learningTree, scopeRecords, scopeStatistics } from './scopes.mjs';
+import { coverage, inTiers, learningTree, rankedTopics, scopeRecords, scopeStatistics, tierBreakdown } from './scopes.mjs';
 import { available, createBank, fold, keyOf, score, sectionOf, statistics, topicOf } from './domain.mjs';
 import { currentId } from './session.mjs';
 import { transition } from './state.mjs';
@@ -14,6 +14,9 @@ const modes = {
 };
 const filterIds = ['query', 'chapter', 'section', 'topic', 'tier', 'subgroup', 'status'];
 const pageSize = 25;
+const pct = (numerator, denominator) => denominator ? Math.round(1000 * numerator / denominator) / 10 + '%' : '—';
+const coverageLabels = ['Phủ tầng 1', 'Phủ tầng 1 và 2', 'Phủ trọng tâm', 'Phủ toàn bộ'];
+const hierarchyView = view => view === 'bank' || view === 'wrong';
 const bankViews = { bank: 'Học Vi sinh', exam: 'Thi thử', flash: 'Thẻ ghi nhớ',
   wrong: 'Ôn sai', answers: 'Xem đáp án' };
 const isBankView = view => Object.hasOwn(bankViews, view);
@@ -39,6 +42,16 @@ async function main() {
   let pointer = null;
   const scopeMap = new Map();
   const expandedScopes = new Set();
+  let tiers = coverage[state.selection === 'focus' ? 2 : 3];
+  let untiered = [];
+  const complete = new Map();
+  for (const chapter of learningTree(records)) {
+    complete.set('chapter:' + chapter.name, chapter.records);
+    for (const section of chapter.sections) {
+      complete.set('section:' + section.name, section.records);
+      for (const topic of section.topics) complete.set('topic:' + topic.name, topic.records);
+    }
+  }
 
   const filters = () => Object.fromEntries([
     ['bank', state.selection], ...filterIds.map(id => [id, $(id).value])
@@ -160,47 +173,115 @@ async function main() {
       : scopeRecords(records, kind, state.progress).length > 0;
   }
 
-  function launchScope(records) {
-    const kind = strategy();
+  function launchScope(records, kind = strategy()) {
     openSession(kind === 'wrong' || kind === 'due' ? kind : 'study',
       scopeRecords(records, kind, state.progress),
       { remaining: kind === 'remaining', randomized: kind === 'random' });
   }
 
+  function checkboxList(counts, selected, attribute) {
+    return counts.map(({ tier, total }) => `<label class="tier-chip"><input type="checkbox"
+      value="${tier}" ${attribute} ${selected.includes(tier) ? 'checked' : ''} ${total ? '' : 'disabled'}>
+      Tầng ${tier} · ${total}</label>`).join('');
+  }
+
+  function coverageStats(selected, baseline) {
+    const s = scopeStatistics(selected, state.progress);
+    return `<p class="scope-counts">Đã chọn <b>${selected.length}/${baseline} · ${pct(selected.length, baseline)}</b>
+      · Đã làm ${s.done}/${selected.length} · ${pct(s.done, selected.length)}
+      · Đúng ${s.correct}/${s.correct + s.wrong} đã chấm · ${pct(s.correct, s.correct + s.wrong)}</p>`;
+  }
+
   function renderTree() {
     scopeMap.clear();
-    function card(node, children, label, kind) {
+    const fullTiers = coverage[state.selection === 'focus' ? 2 : 3];
+    function card(node, children, label, kind, rank = '') {
       const name = kind === 'topic' ? node.name.split(' › ').at(-1) : node.name;
       const key = kind + ':' + node.name;
+      const all = complete.get(key) ?? node.records;
+      const ids = new Set(all.map(q => q.id));
+      const local = untiered.filter(q => ids.has(q.id));
       scopeMap.set(key, node.records);
+      const breakdown = tierBreakdown(all, state.progress).filter(item => fullTiers.includes(item.tier));
+      const localCounts = tierBreakdown(local, state.progress).filter(item => fullTiers.includes(item.tier));
+      const options = kind === 'tier' ? '' : `<details data-branch="${esc(key + ':options')}" ${expandedScopes.has(key + ':options') ? 'open' : ''}>
+        <summary>Chọn tầng và cách học</summary>
+        <p class="scope-counts">${all.length} câu toàn bộ · ${all.filter(q => q.tier < 4).length} trọng tâm</p>
+        <div class="tier-breakdown">${breakdown.map(t => `<span>Tầng ${t.tier}: ${t.total} · ${pct(t.total, all.length)} · Đã làm ${t.done}/${t.total}</span>`).join('')}</div>
+        <form class="local-scope" data-local="${esc(key)}">
+          <div class="tier-options">${checkboxList(localCounts, tiers, 'name="tier"')}</div>
+          <div class="actions">${coverage.slice(0, fullTiers.length).map((preset, index) =>
+            `<button type="button" data-local-coverage="${index}">${coverageLabels[index]} · ${inTiers(local, preset).length}</button>`).join('')}</div>
+          ${view === 'wrong' ? '' : `<label>Cách học <select name="strategy">${$('strategy').innerHTML}</select></label>`}
+          <div data-local-metrics>${coverageStats(node.records, local.length)}</div>
+          <button class="primary" type="submit" ${canStart(node.records, strategy()) ? '' : 'disabled'}>Bắt đầu</button>
+        </form></details>`;
       return `<article class="scope-card scope-${kind}">
-        <button data-scope="${esc(key)}" ${canStart(node.records, strategy()) ? '' : 'disabled'}>
-          ${esc(name)}
-        </button>
-        ${summaryOf(node.records)}
+        <button data-scope="${esc(key)}" ${canStart(node.records, strategy()) ? '' : 'disabled'}>${esc(name)}</button>
+        ${rank ? `<span class="scope-counts">${esc(rank)} · ${esc(node.name)}</span>` : ''}
+        <p class="scope-counts">${all.length} tổng · ${all.filter(q => q.tier < 4).length} trọng tâm ·
+          ${scopeStatistics(node.records, state.progress).done}/${node.records.length} đã làm trong phạm vi</p>
+        ${options}
         ${children ? `<details data-branch="${esc(key)}" ${expandedScopes.has(key) ? 'open' : ''}>
           <summary>${label}</summary><div class="scope-children">${children}</div></details>` : ''}
       </article>`;
     }
-    const chapters = learningTree(matches).map(chapter => card(chapter,
+    const tree = learningTree(matches);
+    const sort = $('topic-sort').value;
+    const chapters = tree.map(chapter => card(chapter,
       chapter.sections.map(section => card(section,
-        section.topics.map(topic => card(topic, '', '', 'topic')).join(''),
+        sort ? '' : section.topics.map(topic => card(topic, '', '', 'topic')).join(''),
         'Xem chủ đề', 'section')).join(''),
       'Xem các mục', 'chapter')).join('');
-    const tiers = [1, 2, 3, 4].map(tier => ({
-      name: 'Tầng ' + tier, records: matches.filter(q => q.tier === tier)
+    const visibleTopics = new Map(tree.flatMap(c => c.sections.flatMap(s => s.topics)).map(topic => [topic.name, topic]));
+    const rankPool = learningTree(untiered).flatMap(c => c.sections.flatMap(s => s.topics))
+      .filter(topic => visibleTopics.has(topic.name));
+    const ranked = sort ? rankedTopics(rankPool, sort, state.progress)
+      .map((node, i) => card(visibleTopics.get(node.name), '', '', 'topic',
+      'Hạng ' + (i + 1) + ' · ' + (sort === 'ratio' ? pct(node.value, 1) : node.value))).join('') : '';
+    const tierCards = fullTiers.map(tier => ({
+      name: 'Tầng ' + tier, records: inTiers(matches, [tier])
     })).filter(tier => tier.records.length).map(node => card(node, '', '', 'tier')).join('');
-    $('scope-tree').innerHTML = chapters ? `<h2>Chương và chủ đề</h2><div class="scope-grid">${chapters}</div>
-      <h2>Phân tầng</h2><div class="scope-grid">${tiers}</div>` : '<p>Không tìm thấy câu hỏi.</p>';
+    $('scope-tree').innerHTML = chapters ? `${ranked ? '<h2>Xếp hạng chủ đề</h2><p class="scope-counts">Tính trong ngân hàng và các bộ lọc hiện tại, trước khi chọn tầng.</p><div class="scope-grid">' + ranked + '</div>' : ''}
+      <h2>Chương và chủ đề</h2><div class="scope-grid">${chapters}</div>
+      <h2>Học riêng từng tầng</h2><div class="scope-grid">${tierCards}</div>` : '<p>Không tìm thấy câu hỏi.</p>';
+    for (const form of $('scope-tree').querySelectorAll('form[data-local]')) {
+      if (form.elements.strategy) form.elements.strategy.value = strategy();
+    }
+  }
+
+  function localSelection(form) {
+    const ids = new Set(complete.get(form.dataset.local).map(q => q.id));
+    const records = untiered.filter(q => ids.has(q.id));
+    const chosen = [...form.querySelectorAll('input:checked')].map(input => Number(input.value));
+    return { records, selected: inTiers(records, chosen), kind: form.elements.strategy?.value ?? 'wrong' };
+  }
+
+  function refreshLocal(form) {
+    const { records, selected, kind } = localSelection(form);
+    form.querySelector('[data-local-metrics]').innerHTML = coverageStats(selected, records.length);
+    form.querySelector('[type=submit]').disabled = !canStart(selected, kind);
   }
 
   function renderBank() {
     renderFilters();
-    matches = bank.select(filters(), state.progress);
+    const hierarchy = hierarchyView(view);
+    const currentFilters = filters();
+    untiered = bank.select(hierarchy ? { ...currentFilters, tier: '' } : currentFilters, state.progress);
+    matches = hierarchy ? inTiers(untiered, tiers) : untiered;
+    $('tier-picker').hidden = !hierarchy;
+    $('single-tier').hidden = hierarchy;
+    $('sort-label').hidden = !hierarchy;
+    if (hierarchy) {
+      const fullTiers = coverage[state.selection === 'focus' ? 2 : 3];
+      const counts = tierBreakdown(bank.questions, state.progress).filter(item => fullTiers.includes(item.tier));
+      $('global-tiers').innerHTML = checkboxList(counts, tiers, 'data-global-tier');
+      $('coverage-presets').innerHTML = coverage.map((preset, index) =>
+        `<button data-coverage="${index}">${coverageLabels[index]} · ${inTiers(bank.questions, preset).length}</button>`).join('');
+    }
     $('bank-title').textContent = bankViews[view];
     $('match-count').textContent = matches.length + ' câu phù hợp';
-    $('scope-overview').innerHTML = summaryOf(matches);
-    const hierarchy = view === 'bank' || view === 'wrong';
+    $('scope-overview').innerHTML = summaryOf(matches) + (hierarchy ? coverageStats(matches, untiered.length) : '');
     $('learning-options').hidden = view !== 'bank';
     $('scope-tree').hidden = !hierarchy;
     $('exam-form').hidden = view !== 'exam';
@@ -427,8 +508,23 @@ async function main() {
     if (data.view) moveTo(data.view);
     if (data.bank && data.bank !== state.selection) {
       save({ ...state, selection: data.bank });
+      tiers = coverage[data.bank === 'focus' ? 2 : 3];
       page = 0;
       render();
+    }
+    if (data.coverage !== undefined) {
+      const index = Number(data.coverage);
+      save({ ...state, selection: index === 3 ? 'all' : 'focus' });
+      tiers = coverage[index];
+      for (const id of filterIds) $(id).value = '';
+      render();
+    }
+    if (data.localCoverage !== undefined) {
+      const form = button.form;
+      for (const input of form.querySelectorAll('input[type=checkbox]')) {
+        input.checked = !input.disabled && coverage[Number(data.localCoverage)].includes(Number(input.value));
+      }
+      refreshLocal(form);
     }
     if (data.scope) launchScope(scopeMap.get(data.scope));
     if (data.open) openSession('study', [bank.byId.get(Number(data.open))]);
@@ -475,6 +571,19 @@ async function main() {
   };
   $('show-answers').onclick = () => { allAnswers = !allAnswers; renderBank(); };
   $('strategy').onchange = renderBank;
+  $('topic-sort').onchange = renderBank;
+  $('global-tiers').onchange = () => {
+    tiers = [...$('global-tiers').querySelectorAll('input:checked')].map(input => Number(input.value));
+    renderBank();
+  };
+  $('scope-tree').addEventListener('change', event => {
+    if (event.target.form?.dataset.local) refreshLocal(event.target.form);
+  });
+  $('scope-tree').addEventListener('submit', event => {
+    event.preventDefault();
+    const { selected, kind } = localSelection(event.target);
+    launchScope(selected, kind);
+  });
   $('start-scope').onclick = () => view === 'flash' ? openSession('flash', matches) : launchScope(matches);
   $('scope-tree').addEventListener('toggle', event => {
     const branch = event.target.dataset.branch;
