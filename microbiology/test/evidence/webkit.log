@@ -1,0 +1,16 @@
+500 câu, 388 trọng tâm, tầng 273/42/73/112, 12 JPEG · 930464bc9e5933ccedbc
+webkit 26.5
+webkit cold local navigation: 191 ms
+✔ 500 and 388 sessions, bank switch, exact ID, previous/next and page reload (1605.491388ms)
+✔ topic with one question, empty intersection, filters and full answer sheet (1251.888114ms)
+✔ legacy 387/388 recovery and new remaining shortcut preserve navigation (994.446881ms)
+✔ exam, wrong review, flashcards, study plan, backup roundtrip, appearance and album (1522.628363ms)
+✔ responsive touch targets, swipe routing and offline reopen with all assets (2430.086972ms)
+ℹ tests 5
+ℹ suites 0
+ℹ pass 5
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 8349.47029

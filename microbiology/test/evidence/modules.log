@@ -1,0 +1,14 @@
+✔ canonical data, exact order, keys, image bytes and captions (1.902108ms)
+✔ domain filters and search preserve ID, source order and valid intersections (0.687436ms)
+✔ session sizes, boundaries, filters and one-question remaining regression (2.323582ms)
+✔ practice feedback, spaced schedule, marking, pause-compatible round trip and flashcard rating (0.578502ms)
+✔ exam response isolation, timeout, submission and cancel (0.402507ms)
+✔ legacy namespaces and V2 migration distinguish exact search from remaining shortcut (11.498893ms)
+ℹ tests 6
+ℹ suites 0
+ℹ pass 6
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 195.268382
