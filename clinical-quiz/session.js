@@ -68,6 +68,8 @@
       scopeControl.value = saved.filters.scope20;
       scopeControl.dispatchEvent(new Event('change'));
     }
+    // Legacy study snapshots use "all" for an empty search field.
+    if (saved.filters.search === 'all') saved.filters.search = '';
     for (const [id, value] of Object.entries(saved.filters)) if ($(id)) $(id).value = value;
     const { current, mode, session, studyTopic, submitted } = saved;
     Object.assign(S, { current, mode, session, studyTopic, submitted });
