@@ -1,0 +1,11 @@
+{
+  "name": "clinical-quiz-verification",
+  "private": true,
+  "scripts": {
+    "build": "node scripts/build-quiz.mjs",
+    "test": "node --test tests/integrity.test.mjs tests/browser.test.cjs"
+  },
+  "devDependencies": {
+    "playwright": "1.62.1"
+  }
+}

@@ -15,3 +15,5 @@ Chạy ứng dụng gốc và bản làm việc qua HTTP cục bộ, trong profi
 | Phát hành | Cổng CI chỉ đọc trên nhánh phát triển, sau khi có bộ kiểm tra ổn định. Mọi lỗi mới phải được xử lý trước khi nghiệm thu. Lỗi baseline được theo dõi bằng ca tái hiện riêng và chỉ đóng sau khi có kiểm thử xác nhận. |
 
 Giai đoạn 1 đạt tiêu chí bảo toàn khi tệp trên GitHub trùng byte với tệp đính kèm, kiểm thử trình duyệt xác minh số lượng ngân hàng và các luồng cốt lõi đã chạy, báo cáo ghi rõ kết quả và lỗi. Ma trận trên là kế hoạch cho các lượt phát triển sau. Bằng chứng giai đoạn 1 nằm trong [báo cáo kiểm toán](AUDIT.md).
+
+Giai đoạn 2 bổ sung bộ hồi quy chạy được, cách chạy và phạm vi đã kiểm chứng trong [hồ sơ giai đoạn 2](PHASE-2.md). Xem [ma trận Chromium và WebKit](COMPATIBILITY.md) để phân biệt kết quả mô phỏng với các ca còn cần thiết bị thật.
