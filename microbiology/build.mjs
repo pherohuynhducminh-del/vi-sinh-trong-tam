@@ -69,7 +69,7 @@ export async function canonical() {
   return { records, images, captions };
 }
 
-const assets = ['index.html', 'style.css', 'app.mjs', 'domain.mjs', 'session.mjs', 'state.mjs',
+const assets = ['index.html', 'style.css', 'app.mjs', 'domain.mjs', 'session.mjs', 'state.mjs', 'scopes.mjs',
   'persistence.mjs', 'manifest.webmanifest', 'icon-192.png', 'icon-512.png'];
 
 export async function build(output) {

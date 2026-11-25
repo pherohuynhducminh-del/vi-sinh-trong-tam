@@ -72,7 +72,12 @@ async function bank(page) {
 }
 const position = page => page.locator('#position').innerText();
 const command = (page, command) => page.locator('[data-command="' + command + '"]');
-const mode = (page, mode) => page.locator('[data-mode="' + mode + '"]');
+const tab = (page, view) => page.locator('[data-view="' + view + '"]');
+const startScope = page => page.locator('#start-scope');
+const filters = async page => {
+  const panel = page.locator('#scope-filters');
+  if (await panel.getAttribute('open') === null) await panel.locator('summary').click();
+};
 const chosen = (page, choice) => page.locator('[data-bank="' + choice + '"]');
 const dataState = page => page.evaluate(key => JSON.parse(localStorage.getItem(key)), STORAGE);
 
@@ -83,8 +88,8 @@ test('500 and 388 sessions, bank switch, exact ID, previous/next and page reload
     const ready = Date.now() - started;
     assert.ok(ready < 8000, 'local cold navigation took ' + ready + ' ms');
     assert.match(await page.locator('#match-count').innerText(), /^500/);
-    assert.equal(await page.locator('#results article').count(), 25);
-    await mode(page, 'practice').click();
+    assert.ok(await page.locator('.scope-chapter').count());
+    await startScope(page).click();
     assert.match(await position(page), /1 \/ 500/);
     assert.equal(await command(page, 'previous').isDisabled(), true);
     await command(page, 'next').click();
@@ -99,14 +104,17 @@ test('500 and 388 sessions, bank switch, exact ID, previous/next and page reload
     await command(page, 'resume').click();
     assert.match(await position(page), /2 \/ 500/);
     await command(page, 'pause').click();
-    await mode(page, 'practice').click();
+    await startScope(page).click();
     assert.match(await position(page), /1 \/ 388/);
+    await page.locator('.session-tools summary').click();
     await command(page, 'restart').click();
     assert.match(await position(page), /1 \/ 388/);
+    await page.locator('.session-tools summary').click();
     await command(page, 'cancel').click();
+    await filters(page);
     await page.locator('#query').fill('Câu 497');
     assert.match(await page.locator('#match-count').innerText(), /^1 /);
-    await mode(page, 'study').click();
+    await startScope(page).click();
     assert.match(await position(page), /1 \/ 1 · ID 497/);
     assert.equal(await command(page, 'next').isDisabled(), true);
     await page.locator('[data-answer="C"]').click();
@@ -120,11 +128,12 @@ test('topic with one question, empty intersection, filters and full answer sheet
   await fixture(async page => {
     await bank(page);
     await chosen(page, 'focus').click();
+    await filters(page);
     await page.locator('#chapter').selectOption('Virus học');
     await page.locator('#section').selectOption('Các nhóm virus');
     await page.locator('#topic').selectOption('Virus học › Sởi');
-    assert.equal(await page.locator('#results article').count(), 1);
-    await mode(page, 'study').click();
+    assert.equal(await page.locator('.scope-topic').count(), 1);
+    await startScope(page).click();
     assert.match(await position(page), /1 \/ 1/);
     await command(page, 'study-reveal').click();
     await page.locator('.answer').waitFor();
@@ -134,8 +143,9 @@ test('topic with one question, empty intersection, filters and full answer sheet
     await command(page, 'pause').click();
     await page.locator('#query').fill('497');
     assert.match(await page.locator('#match-count').innerText(), /^0 /);
-    assert.equal(await mode(page, 'practice').isDisabled(), true);
+    assert.equal(await startScope(page).isDisabled(), true);
     await page.locator('#reset').click();
+    await tab(page, 'answers').click();
     await page.locator('#show-answers').click();
     assert.equal(await page.locator('#results article').count(), 388);
     await chosen(page, 'all').click();
@@ -164,8 +174,10 @@ test('legacy 387/388 recovery and new remaining shortcut preserve navigation', a
     assert.match(await position(page), /1 \/ 388 · ID 497/);
     await command(page, 'next').click();
     assert.match(await position(page), /2 \/ 388/);
+    await page.locator('.session-tools summary').click();
     await command(page, 'cancel').click();
-    await page.locator('#remaining').click();
+    await page.locator('#strategy').selectOption('remaining');
+    await startScope(page).click();
     assert.match(await position(page), /1 \/ 388 · ID 497/);
     assert.equal((await dataState(page)).progress.marked[0], 497);
     await page.reload();
@@ -178,6 +190,8 @@ test('legacy 387/388 recovery and new remaining shortcut preserve navigation', a
 test('exam, wrong review, flashcards, study plan, backup roundtrip, appearance and album', async () => {
   await fixture(async page => {
     await bank(page);
+    await tab(page, 'exam').click();
+    await filters(page);
     await page.locator('#query').fill('497');
     await page.locator('#exam-start').click();
     await page.locator('#timer').waitFor();
@@ -188,15 +202,19 @@ test('exam, wrong review, flashcards, study plan, backup roundtrip, appearance a
     await page.getByText(/0\/1 câu đúng/).waitFor();
     await command(page, 'mark').click();
     await command(page, 'pause').click();
-    await mode(page, 'wrong').click();
+    await tab(page, 'wrong').click();
+    await startScope(page).click();
     await page.locator('[data-answer="C"]').click();
     await command(page, 'pause').click();
-    assert.equal(await mode(page, 'wrong').isDisabled(), true);
-    await mode(page, 'flash').click();
+    assert.equal(await startScope(page).isDisabled(), true);
+    await tab(page, 'flash').click();
+    await startScope(page).click();
     await command(page, 'flip').click();
     await page.getByText('Đáp án C · GAG').waitFor();
     await command(page, 'forgot').click();
     assert.ok((await dataState(page)).progress.attempts[497].due > Date.now());
+    await command(page, 'pause').click();
+    await tab(page, 'settings').click();
     await page.locator('#theme').click();
     await page.locator('#highlight').click();
     assert.equal(await page.locator('html').getAttribute('data-theme'), 'dark');
@@ -205,6 +223,7 @@ test('exam, wrong review, flashcards, study plan, backup roundtrip, appearance a
     await page.locator('#plan-count').fill('3');
     await page.getByRole('button', { name: 'Lưu kế hoạch' }).click();
     await page.getByText(/3 câu, 30 phút\/ngày/).waitFor();
+    await tab(page, 'settings').click();
     const backup = await dataState(page);
     backup.progress.attempts[497].due = 1;
     const downloadEvent = page.waitForEvent('download');
@@ -218,11 +237,14 @@ test('exam, wrong review, flashcards, study plan, backup roundtrip, appearance a
     });
     await page.getByText('Đã nhập tiến độ Vi sinh.').waitFor();
     await page.locator('[data-view="bank"]').click();
-    await mode(page, 'due').click();
+    await page.locator('#strategy').selectOption('due');
+    await startScope(page).click();
     assert.match(await position(page), /1 \/ 1 · ID 497/);
+    await command(page, 'pause').click();
     await page.locator('[data-view="progress"]').click();
     await page.locator('#run-plan').click();
     assert.match(await position(page), /1 \/ 3/);
+    await command(page, 'pause').click();
     await page.locator('[data-view="album"]').click();
     assert.equal(await page.locator('#album img').count(), 12);
     await page.locator('[data-image="1"]').click();
@@ -231,17 +253,52 @@ test('exam, wrong review, flashcards, study plan, backup roundtrip, appearance a
   });
 });
 
+test('ordered learning cards, wrong review by hierarchy and randomized tier', async () => {
+  await fixture(async page => {
+    await page.addInitScript(() => {
+      localStorage.setItem('mcq_vs_multi1', JSON.stringify({ answers: { 497: 'A' }, marked: [497] }));
+    });
+    await bank(page);
+    const labels = await page.locator('.scope-chapter > button').allTextContents();
+    assert.deepEqual(labels.map(label => label.trim()),
+      ['Vi sinh đại cương', 'Vi khuẩn học', 'Virus học', 'Miễn dịch', 'Kháng sinh']);
+    await tab(page, 'wrong').click();
+    const chapter = page.locator('.scope-chapter').filter({ has: page.locator('[data-scope="chapter:Virus học"]') });
+    await chapter.locator(':scope > details > summary').click();
+    const section = page.locator('.scope-section').filter({ has: page.locator('[data-scope="section:Các nhóm virus"]') });
+    await section.locator(':scope > details > summary').click();
+    for (const scope of ['topic:Virus học › Cúm và HIV', 'section:Các nhóm virus', 'chapter:Virus học', 'tier:Tầng 1']) {
+      await page.locator(`[data-scope="${scope}"]`).click();
+      assert.match(await position(page), /1 \/ 1 · ID 497/);
+      assert.equal(await command(page, 'next').isDisabled(), true);
+      await command(page, 'pause').click();
+    }
+    await tab(page, 'bank').click();
+    await page.locator('#strategy').selectOption('random');
+    await page.locator('[data-scope="tier:Tầng 1"]').click();
+    const snapshot = await dataState(page);
+    assert.equal(snapshot.session.ids.length, 273);
+    assert.equal(new Set(snapshot.session.ids).size, 273);
+    assert.equal(snapshot.progress.attempts[497].result, false);
+    assert.deepEqual(snapshot.progress.marked, [497]);
+  });
+});
+
 test('responsive touch targets, swipe routing and offline reopen with all assets', async () => {
-  for (const device of [devices['iPhone 13'], devices['iPad (gen 7)'], { viewport: { width: 1366, height: 900 } }]) {
+  for (const device of [devices['iPhone 13'], devices['iPad (gen 7)'], devices['iPad (gen 7) landscape'], { viewport: { width: 1366, height: 900 } }]) {
     await fixture(async (page, context) => {
       await bank(page);
       assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth), true);
-      if (device.hasTouch) await mode(page, 'practice').tap();
-      else await mode(page, 'practice').click();
+      await page.getByText('Đã tải đủ tài nguyên để học ngoại tuyến.').waitFor({ timeout: 12000 });
+      if (process.env.MICRO_SCREENSHOTS && page.viewportSize().width === 390) {
+        await page.screenshot({ path: join(process.env.MICRO_SCREENSHOTS, engine + '-learn-390.png'), scale: 'css' });
+      }
+      if (device.hasTouch) await startScope(page).tap();
+      else await startScope(page).click();
       assert.ok((await command(page, 'next').boundingBox()).height >= 44);
       if (process.env.MICRO_SCREENSHOTS) {
         const width = page.viewportSize().width;
-        await page.screenshot({ path: join(process.env.MICRO_SCREENSHOTS, engine + '-' + width + '.png'), fullPage: true });
+        await page.screenshot({ path: join(process.env.MICRO_SCREENSHOTS, engine + '-' + width + '.png'), scale: 'css' });
       }
       if (device.hasTouch && engine === 'chromium') {
         const devtools = await context.newCDPSession(page);
@@ -263,12 +320,13 @@ test('responsive touch targets, swipe routing and offline reopen with all assets
         });
         assert.match(await position(page), /2 \/ 500/);
       }
-      await page.getByText('Đã tải đủ tài nguyên để học ngoại tuyến.').waitFor({ timeout: 12000 });
       await page.waitForFunction(() => navigator.serviceWorker.controller !== null);
       const cached = await page.evaluate(async () => {
         const name = (await caches.keys()).find(name => name.startsWith('microbiology-rebuild:'));
         return (await (await caches.open(name)).keys()).map(request => request.url);
       });
+      assert.equal(cached.length, 24);
+      assert.ok(cached.every(url => url.startsWith(origin + '/microbiology/')));
       assert.equal(cached.filter(url => /\/images\/\d+\.jpg$/.test(url)).length, 12);
       networkAvailable = false;
       try {
