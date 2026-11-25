@@ -218,6 +218,75 @@ for (const [engine, browser] of Object.entries({ chromium, webkit })) {
       assert.equal((await state(quiz)).current, 1);
     });
 
+    await t.test('Vi sinh trọng tâm · ID 497 tự động, phiên chủ động và dữ liệu đã lưu', async t => {
+      const page = await instance.newPage({ ...devices['iPhone 13'] });
+      t.after(() => page.close());
+      await page.goto(base + '/candidate?diagnostics=1');
+      let quiz = await frame(page);
+      await byId(quiz, 'scope20').selectOption('focus');
+      await byId(quiz, 'next20').tap();
+      assert.equal((await visibleIds(quiz)).length, 388);
+      await byId(quiz, 'exit26').tap();
+      await byId(quiz, 'discard23').tap();
+
+      await quiz.evaluate(() => {
+        for (const q of QUESTIONS) {
+          if (META[q.id].tier < 4 && q.id !== 497) S.answers[q.id] = q.options[0].label;
+        }
+        save();
+      });
+      const previous = (await state(quiz)).answers;
+      await byId(quiz, 'next20').tap();
+      assert.equal((await state(quiz)).current, 497);
+      assert.match(await byId(quiz, 'qTitle').textContent(), /1 \/ 388 · ID 497/);
+      assert.equal(await byId(quiz, 'nextBtn').isEnabled(), true);
+      await byId(quiz, 'nextBtn').tap();
+      await byId(quiz, 'prevBtn').tap();
+      assert.equal((await state(quiz)).current, 497);
+      await byId(quiz, 'exit26').tap();
+      await byId(quiz, 'discard23').tap();
+
+      await quiz.evaluate(() => window.localStorage.setItem('clinical-quiz:' + STORAGE + '_practice23_focus', JSON.stringify({
+        current: 497, session: [497], submitted: false,
+        filters: { scope20: 'focus', search: '', filter: 'all', topicFilter: 'all', formatFilter: 'all' }
+      })));
+      await page.reload();
+      quiz = await frame(page);
+      await quiz.getByRole('button', { name: 'Tiếp tục luyện tập đã lưu' }).tap();
+      assert.equal((await state(quiz)).current, 497);
+      assert.equal((await visibleIds(quiz)).length, 388);
+      assert.deepEqual((await state(quiz)).answers, previous);
+      assert.equal(await quiz.evaluate(() => quizNavigationDiagnostics().migratedSnapshots), 1);
+      await byId(quiz, 'exit26').tap();
+      await byId(quiz, 'discard23').tap();
+
+      await mode(quiz, 'Luyện tập');
+      await byId(quiz, 'search').fill('497');
+      await byId(quiz, 'sessionStart').tap();
+      assert.deepEqual(await visibleIds(quiz), [497]);
+      assert.equal(await byId(quiz, 'nextBtn').isDisabled(), true);
+      await byId(quiz, 'exit26').tap();
+      await byId(quiz, 'keep23').tap();
+      await page.reload();
+      quiz = await frame(page);
+      await quiz.getByRole('button', { name: 'Tiếp tục luyện tập đã lưu' }).tap();
+      assert.deepEqual(await visibleIds(quiz), [497]);
+      assert.equal(await quiz.evaluate(() => quizNavigationDiagnostics().migratedSnapshots), 0);
+      await byId(quiz, 'exit26').tap();
+      await byId(quiz, 'discard23').tap();
+      quiz = await switchTo(page, 'vs');
+      assert.deepEqual((await state(quiz)).answers, previous);
+      quiz = await switchTo(page, 'hs');
+      assert.deepEqual((await state(quiz)).answers, {});
+      await switchTo(page, 'focus');
+      quiz = await frame(page);
+      await quiz.getByText('Chẩn đoán Clinical Quiz', { exact: true }).tap();
+      const report = JSON.parse(await quiz.getByRole('textbox', { name: 'Báo cáo trạng thái có thể sao chép' }).inputValue());
+      assert.equal(report.bank, 'focus');
+      assert.equal(report.bankSize, 500);
+      assert.equal('answers' in report || 'search' in report, false);
+    });
+
     await t.test('thi thử · hủy đổi, nộp khi đổi, hồi phục và hết giờ', async t => {
       const page = await instance.newPage();
       page.setDefaultTimeout(12000);

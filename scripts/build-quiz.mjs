@@ -10,7 +10,7 @@ function replaceOnce(source, target, replacement) {
 }
 
 const readScript = name => readFile(new URL('../clinical-quiz/' + name, import.meta.url), 'utf8');
-const session = await readScript('session.js');
+const session = (await Promise.all(['session.js', 'navigation.js', 'diagnostics.js'].map(readScript))).join('\n');
 const storage = await readScript('storage.js');
 const banks = await readScript('banks.js');
 let html = await readOriginal();

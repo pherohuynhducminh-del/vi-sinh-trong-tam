@@ -122,6 +122,7 @@
       }
     }
     const result = { current: value.current, session: [...new Set(value.session)], submitted: value.submitted, filters };
+    if (value.navigationVersion === 1) result.navigationVersion = 1;
     if (study) {
       requireValid(['practice', 'study', 'review'].includes(value.mode));
       requireValid(value.studyTopic == null || topicList().includes(value.studyTopic));

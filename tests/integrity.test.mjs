@@ -6,7 +6,8 @@ import { development, readOriginal } from '../scripts/quiz-source.mjs';
 test('bản gốc và toàn bộ ngân hàng, ảnh và phân tầng được bảo toàn', async () => {
   const original = await readOriginal();
   const candidate = await readFile(development, 'utf8');
-  const session = await readFile(new URL('../clinical-quiz/session.js', import.meta.url), 'utf8');
+  const session = (await Promise.all(['session.js', 'navigation.js', 'diagnostics.js']
+    .map(name => readFile(new URL('../clinical-quiz/' + name, import.meta.url), 'utf8')))).join('\n');
   const storage = await readFile(new URL('../clinical-quiz/storage.js', import.meta.url), 'utf8');
   const banks = await readFile(new URL('../clinical-quiz/banks.js', import.meta.url), 'utf8');
   const pattern = /(?:const hs=|,vs=)("(?:\\.|[^"\\])*")/g;
