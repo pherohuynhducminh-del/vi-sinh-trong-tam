@@ -1,4 +1,4 @@
-import { createBank, fold, keyOf, score, statistics, topicOf } from './domain.mjs';
+import { available, createBank, fold, keyOf, score, sectionOf, statistics, topicOf } from './domain.mjs';
 import { currentId } from './session.mjs';
 import { transition } from './state.mjs';
 import { importBackup, storageAdapter } from './persistence.mjs';
@@ -11,7 +11,7 @@ const modes = {
   study: 'Học theo chủ đề', practice: 'Luyện tập', exam: 'Thi thử',
   flash: 'Flashcard', wrong: 'Làm lại câu sai', due: 'Ôn ngắt quãng'
 };
-const filterIds = ['query', 'chapter', 'topic', 'tier', 'section', 'status'];
+const filterIds = ['query', 'chapter', 'section', 'topic', 'tier', 'subgroup', 'status'];
 const pageSize = 25;
 
 async function main() {
@@ -29,7 +29,7 @@ async function main() {
   let notice = saved.notice;
   let page = 0;
   let allAnswers = false;
-  let flashBack = false;
+  let showCard = false;
   let matches = [];
   let pointer = null;
 
@@ -85,7 +85,7 @@ async function main() {
       return;
     }
     save({ ...next, paused: false });
-    flashBack = false;
+    showCard = false;
     moveTo('session');
   }
 
@@ -100,10 +100,13 @@ async function main() {
     const available = bank.select({ bank: state.selection });
     choices('chapter', sorted(available.map(q => q.classification[0])));
     const chapter = $('chapter').value;
-    const topicRecords = available.filter(q => !chapter || q.classification[0] === chapter);
+    const chapterRecords = available.filter(q => !chapter || q.classification[0] === chapter);
+    choices('section', sorted(chapterRecords.map(sectionOf)));
+    const section = $('section').value;
+    const topicRecords = chapterRecords.filter(q => !section || sectionOf(q) === section);
     choices('topic', sorted(topicRecords.map(topicOf)), value => chapter ? value.split(' › ')[1] : value);
     choices('tier', sorted(available.map(q => String(q.tier))), value => 'Tầng ' + value);
-    choices('section', sorted(available.map(q => q.sub)), value => 'Nhóm ' + value);
+    choices('subgroup', sorted(available.map(q => q.sub)), value => 'Nhóm ' + value);
   }
 
   function answerLine(q) {
@@ -182,7 +185,7 @@ async function main() {
     const flash = s.mode === 'flash';
     const marked = state.progress.marked.includes(q.id);
     const judged = s.checked.includes(q.id) || s.phase === 'submitted';
-    const reveal = judged || (flash && flashBack);
+    const reveal = judged || ((flash || s.mode === 'study') && showCard);
     const result = score(q, labels);
     const summary = exam && s.phase === 'submitted' ? examSummary(s) : '';
     const explanation = reveal && q.explanation ? `<details><summary>${esc(q.explanation.title)}</summary>
@@ -205,6 +208,7 @@ async function main() {
             const text = !exam || judged ? highlight(option.text, q) : esc(option.text);
             return `<button class="option${answer ? ' is-answer' : ''}" data-answer="${esc(option.label)}" aria-pressed="${active}" ${judged ? 'disabled' : ''}>${esc(option.label)}. ${text}</button>`;
           }).join('')}</div>`}
+        ${s.mode === 'study' && !judged ? `<button data-command="study-reveal" aria-expanded="${showCard}">${showCard ? 'Ẩn đáp án' : 'Xem đáp án'}</button>` : ''}
         ${flash && !reveal ? '<button class="primary" data-command="flip">Lật thẻ</button>' : ''}
         ${flash && reveal && !judged ? '<div class="actions"><button data-command="forgot">Chưa nhớ</button><button class="primary" data-command="remembered">Đã nhớ</button></div>' : ''}
         ${flash && judged ? '<p class="feedback">Đã lên lịch ôn thẻ này.</p>' : ''}
@@ -297,22 +301,29 @@ async function main() {
 
   function navigate(position, direction) {
     if (position < 0 || position >= state.session.ids.length || position === state.session.position) return;
-    flashBack = false;
+    showCard = false;
     send({ type: 'move', position });
     render();
     const nextControl = document.querySelector('[data-command="' + direction + '"]:not(:disabled)');
     (nextControl ?? document.querySelector('#session-view h1'))?.focus({ preventScroll: true });
   }
 
+  const commandFocus = name => document.querySelector('[data-command= + name + ]')?.focus();
   const commands = {
     resume() {
+      showCard = false;
       save({ ...state, paused: false });
       moveTo('session');
     },
     pause() { moveTo('bank'); },
     previous() { navigate(state.session.position - 1, 'previous'); },
     next() { navigate(state.session.position + 1, 'next'); },
-    flip() { flashBack = true; render(); document.querySelector('[data-command="forgot"]')?.focus(); },
+    flip() { showCard = true; render(); document.querySelector('[data-command="forgot"]')?.focus(); },
+    'study-reveal'() {
+      showCard = !showCard;
+      render();
+      commandFocus('study-reveal');
+    },
     forgot() { send({ type: 'recall', remembered: false }); render(); },
     remembered() { send({ type: 'recall', remembered: true }); render(); },
     mark() { send({ type: 'mark', id: currentId(state.session) }); render(); },
@@ -328,7 +339,7 @@ async function main() {
     restart() {
       if (confirm('Khởi động lại phiên từ đầu?')) {
         send({ type: 'restart' });
-        flashBack = false;
+        showCard = false;
         render();
         focusTitle();
       }
@@ -388,7 +399,8 @@ async function main() {
 
   for (const id of filterIds) {
     $(id).addEventListener(id === 'query' ? 'input' : 'change', () => {
-      if (id === 'chapter') $('topic').value = '';
+      if (id === 'chapter') $('section').value = '';
+      if (id === 'chapter' || id === 'section') $('topic').value = '';
       page = 0;
       renderBank();
     });
@@ -443,8 +455,10 @@ async function main() {
     const plan = state.progress.plan;
     if (!plan) return;
     const records = bank.select({ bank: state.selection });
-    const ordered = [...records.filter(due), ...records.filter(q => !due(q) && state.progress.attempts[q.id]?.labels.length === undefined),
-      ...records.filter(q => !due(q) && state.progress.attempts[q.id]?.labels.length !== undefined)];
+    const pending = records.filter(q => !due(q));
+    const unseen = available(pending, state.progress);
+    const ordered = [...records.filter(due), ...unseen,
+      ...pending.filter(q => state.progress.attempts[q.id]?.labels.length)];
     openSession('study', ordered.slice(0, plan.count));
   };
   $('export').onclick = () => {

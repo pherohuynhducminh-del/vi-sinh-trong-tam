@@ -2,6 +2,31 @@ export const DAY = 86_400_000;
 export const fold = value => String(value).toLowerCase().normalize('NFD')
   .replace(/[\u0300-\u036f]/g, '').replace(/đ/g, 'd').trim();
 export const topicOf = q => q.classification.join(' › ');
+const sections = {
+  'Virus học': [
+    ['Virus học đại cương', ['Cấu trúc và thành phần', 'Nuôi cấy tế bào', 'Nhân lên và hậu quả',
+      'Miễn dịch và interferon', 'Phòng và điều trị', 'Chẩn đoán', 'Thực khuẩn thể', 'Đặc tính chung',
+      'Biểu hiện bệnh và hướng mô', 'Biến đổi kháng nguyên']],
+    ['Các nhóm virus', null]
+  ],
+  'Vi khuẩn học': [
+    ['Vi khuẩn học đại cương', ['Cấu trúc, sinh lý, sinh trưởng', 'Bám dính và độc lực',
+      'Di truyền và đột biến', 'Độc tố và yếu tố độc lực']],
+    ['Các nhóm vi khuẩn', null]
+  ],
+  'Miễn dịch': [
+    ['Xét nghiệm miễn dịch', ['Phản ứng huyết thanh', 'ELISA']],
+    ['Miễn dịch và dự phòng', null]
+  ],
+  'Kháng sinh': [['Cơ chế và nhóm thuốc', null]],
+  'Vi sinh đại cương': [['Kiểm soát nhiễm khuẩn', null]]
+};
+
+export function sectionOf(q) {
+  const [chapter, topic] = q.classification;
+  return sections[chapter]?.find(([, topics]) => !topics || topics.includes(topic))?.[0] ?? chapter;
+}
+
 export const labelsOf = q => q.options.map(option => option.label);
 export const keyOf = q => [q.answer].flat().filter(label => label !== null);
 export const own = (object, key) => Object.hasOwn(object, key);
@@ -32,7 +57,8 @@ export function createBank(questions) {
         (!filters.chapter || q.classification[0] === filters.chapter) &&
         (!filters.topic || topicOf(q) === filters.topic) &&
         (!filters.tier || String(q.tier) === filters.tier) &&
-        (!filters.section || q.sub === filters.section) &&
+        (!filters.section || sectionOf(q) === filters.section) &&
+        (!filters.subgroup || q.sub === filters.subgroup) &&
         (exact ? q.id === Number(exact[1]) : searchable.get(q.id).includes(text)) &&
         (filters.status !== 'marked' || progress.marked.includes(q.id)) &&
         (filters.status !== 'wrong' || attempt?.result === false) &&
@@ -49,10 +75,10 @@ export function attemptFor(q, labels, previous, now) {
   return { labels, result, streak, at: now, due: result === null ? null : now + days * DAY };
 }
 
-export const available = (records, progress) => records.filter(q => !own(progress.attempts, q.id));
+export const available = (records, progress) => records.filter(q => !progress.attempts[q.id]?.labels.length);
 
 export function statistics(records, progress) {
-  const attempts = records.map(q => progress.attempts[q.id]).filter(Boolean);
+  const attempts = records.map(q => progress.attempts[q.id]).filter(attempt => attempt?.labels.length);
   return {
     done: attempts.length,
     correct: attempts.filter(a => a.result === true).length,

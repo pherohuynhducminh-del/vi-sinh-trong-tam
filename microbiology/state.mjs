@@ -1,4 +1,4 @@
-import { attemptFor, keyOf, score, validAnswer } from './domain.mjs';
+import { DAY, attemptFor, score, validAnswer } from './domain.mjs';
 import { currentId, navigate, restart, startSession } from './session.mjs';
 
 function record(progress, q, labels, now) {
@@ -60,16 +60,11 @@ export function transition(bank, state, event, now = Date.now()) {
     return { ...state, session: { ...session, responses } };
   }
   if (event.type === 'recall' && session.mode === 'flash') {
-    const labels = keyOf(q);
-    const result = event.remembered;
     const previous = progress.attempts[id];
-    const attempt = attemptFor(q, labels, result ? previous : null, now);
-    if (!result) {
-      // A self-rating schedules review independently of multiple-choice accuracy.
-      attempt.result = previous?.result ?? null;
-      attempt.labels = previous?.labels ?? [];
-      attempt.streak = 0;
-    }
+    const streak = event.remembered ? (previous?.streak ?? 0) + 1 : 0;
+    const days = streak ? Math.min(30, 2 ** Math.min(streak - 1, 5)) : 1;
+    const attempt = { labels: previous?.labels ?? [], result: previous?.result ?? null,
+      at: now, due: now + days * DAY, streak };
     return { ...state, progress: { ...progress, attempts: { ...progress.attempts, [id]: attempt } },
       session: { ...session, checked: [...session.checked, id] } };
   }

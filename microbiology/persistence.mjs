@@ -69,19 +69,20 @@ function compatibleLegacySession(bank, snapshot, variant, progress) {
   if (!object(snapshot) || !bankName(variant) || !Array.isArray(snapshot.session)) return null;
   const filters = snapshot.filters ?? {};
   const scope = filters.scope20;
-  // Specialized legacy scopes used different orderings. Preserve progress and start afresh.
-  if (scope && !['all', 'focus', 'target', 'core388', 'all500'].includes(scope)) return null;
+  const tier = /^[1-4]$/.test(scope) ? scope : '';
+  const subgroup = /^4[A-D]$/.test(scope) ? scope : '';
+  if (scope && !tier && !subgroup && !['all', 'focus'].includes(scope)) return null;
   if (filters.formatFilter && filters.formatFilter !== 'all') return null;
   const query = filters.search === 'all' ? '' : filters.search;
   const rawTopic = snapshot.studyTopic || filters.topicFilter;
   const topic = rawTopic && rawTopic !== 'all' ? rawTopic : '';
   const status = filters.filter === 'marked' || filters.filter === 'wrong' ? filters.filter : '';
   if (filters.filter && !['all', 'marked', 'wrong'].includes(filters.filter)) return null;
-  const records = bank.select({ bank: variant, topic, query, status }, progress);
+  const records = bank.select({ bank: variant, topic, query, status, tier, subgroup }, progress);
   const allowed = new Set(records.map(q => q.id));
   let ids = snapshot.session.length
     ? [...new Set(snapshot.session)].filter(id => allowed.has(id)) : [...allowed];
-  if (snapshot.session.length === 1 && !snapshot.navigationVersion && !query && !topic && !status &&
+  if (snapshot.session.length === 1 && !snapshot.navigationVersion && !query && !topic && !status && !tier && !subgroup &&
     ids.length === 1 && !own(progress.attempts, ids[0]) &&
     records.every(q => q.id === ids[0] || own(progress.attempts, q.id))) {
     const [remaining] = ids;
@@ -130,7 +131,7 @@ function legacy(bank, value) {
     highlight: value.preferences?.highlight === true };
   const preferred = value.preferences?.focus ? 'focus' : 'all';
   const studyBank = value.study?.filters?.scope20
-    ? (['focus', 'target', 'core388'].includes(value.study.filters.scope20) ? 'focus' : 'all') : null;
+    ? (value.study.filters.scope20 === 'all' ? null : 'focus') : null;
   const snapshots = [
     [preferred, value.practice?.[preferred === 'focus' ? 'focus' : 'normal']],
     [studyBank, value.study],
