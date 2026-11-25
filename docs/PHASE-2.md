@@ -34,3 +34,9 @@ npm test
 - Mã ngân hàng `vi-sinh-495` được giữ làm mã tương thích của tệp sao lưu. Dữ liệu runtime có 500 ID.
 - Ca lỗi ghi đã kiểm thử trong luồng nhập và xử lý ghi khi chuyển ngân hàng đang thi. Cơ chế lưu thường của bản chuẩn vẫn có thể mất tiến độ khi trình duyệt từ chối ghi hoặc hệ điều hành đóng trang mà không phát sự kiện. Chưa kiểm thử xóa dữ liệu hoặc thoát trình duyệt cưỡng bức trên thiết bị thật.
 - Đã kiểm tra chọn và cuộn trong mô phỏng. Chưa kiểm thử Safari iOS/iPadOS trên thiết bị thật, bàn phím vật lý, đổi hướng màn hình, hộp thoại tệp của hệ điều hành và vuốt bằng tay.
+
+## Kết quả lần chạy cuối
+
+- Mã nguồn và bộ kiểm thử tại commit `0ec68254e25172c5c91a965b45eca46daeb5c7fd`.
+- Sáu ca trình duyệt trên mỗi engine và kiểm tra toàn vẹn đều đạt. Xem [nhật ký Chromium](evidence/phase-2/chromium.log) và [nhật ký WebKit](evidence/phase-2/webkit.log).
+- SHA-256 của bản phát triển đã chạy là `1f3101021ace523e08e6fbfbe4cea76b5f820c6b164a6930d32352c7a50b8efd`. Đã kiểm tra lại SHA-256 của cả bản chuẩn và bản phát triển bằng blob trên GitHub.
