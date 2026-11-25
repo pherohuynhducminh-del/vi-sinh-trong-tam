@@ -1,0 +1,26 @@
+
+> test
+> node --test tests/integrity.test.mjs tests/browser.test.cjs
+
+▶ chromium desktop, iPhone, iPad · so giao diện và thao tác
+  ✔ desktop (10267.354983ms)
+  ✔ iphone (12101.676745ms)
+  ✔ ipad (9439.703988ms)
+  ✔ dữ liệu, lọc, phiên một câu và lịch ôn (17660.522788ms)
+  ✔ thi thử · hủy đổi, nộp khi đổi, hồi phục và hết giờ (6864.384878ms)
+  ✔ sao lưu v2, phiên cũ, từ chối file sai và lỗi ghi (8867.090277ms)
+✔ chromium desktop, iPhone, iPad · so giao diện và thao tác (66796.281435ms)
+✔ bản gốc và toàn bộ ngân hàng, ảnh và phân tầng được bảo toàn (105.277682ms)
+ℹ tests 8
+ℹ suites 0
+ℹ pass 8
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 67843.960257
+npm notice
+npm notice New major version of npm available! 11.19.1 -> 12.2.3
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.3
+npm notice To update run: npm install -g npm@12.2.3
+npm notice

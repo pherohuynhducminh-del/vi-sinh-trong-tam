@@ -1,0 +1,3 @@
+chromium 156.0.8078.79: HTTP 200, banks 296/500/388, 12/12 images, touch, singleton navigation, practice resume and root storage isolation passed
+Skipping host requirements validation logic because `PLAYWRIGHT_SKIP_VALIDATE_HOST_REQUIREMENTS` env variable is set.
+webkit 26.5: HTTP 200, banks 296/500/388, 12/12 images, touch, singleton navigation, practice resume and root storage isolation passed
