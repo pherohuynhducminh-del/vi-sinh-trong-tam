@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import { createHash } from 'node:crypto';
 import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
+import { applyReviewedCorrections, assertCleanText } from './text-quality.mjs';
 
 const sourceHash = 'ed9205578d42b736ddc3d42d5e386b1521f597700b35aaef70dafc5640ac3123';
 const hash = data => createHash('sha256').update(data).digest('hex');
@@ -9,7 +10,8 @@ const hash = data => createHash('sha256').update(data).digest('hex');
 export async function canonical() {
   const source = await readFile(new URL('../nkhkjjhkkjjh.html', import.meta.url));
   assert.equal(hash(source), sourceHash);
-  const html = source.toString();
+  const utf8 = new TextDecoder('utf-8', { fatal: true });
+  const html = utf8.decode(source);
   const bank = JSON.parse(html.match(/,vs=("(?:\\.|[^"\\])*")/)[1]);
   function literal(name, source, prefix = '') {
     const anchor = name + '=' + prefix;
@@ -66,6 +68,10 @@ export async function canonical() {
       return { alt, reference, title };
     });
   assert.equal(captions.length, images.length);
+  const corrections = JSON.parse(utf8.decode(await readFile(new URL('encoding-corrections.json', import.meta.url))));
+  applyReviewedCorrections(records, corrections);
+  for (const record of records) assertCleanText(record, 'ID ' + record.id);
+  assertCleanText(captions, 'Chú thích ảnh');
   return { records, images, captions };
 }
 

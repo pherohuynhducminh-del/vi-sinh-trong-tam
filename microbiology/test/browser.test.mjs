@@ -311,6 +311,43 @@ test('coverage presets, multi-tier intersection, local controls and topic rankin
   });
 });
 
+test('Unicode HIV search, Focus Touch highlighting, answer sheet and flashcards', async () => {
+  const verify = async page => {
+    await bank(page);
+    await chosen(page, 'focus').click();
+    await tab(page, 'settings').click();
+    await page.locator('#highlight').click();
+    await tab(page, 'bank').click();
+    await filters(page);
+    await page.locator('#query').fill('nhiem trung co hoi la gi');
+    assert.match(await page.locator('#match-count').innerText(), /^1 /);
+    await startScope(page).click();
+    await page.getByRole('heading', { name: 'Nhiễm trùng cơ hội là gì ?' }).waitFor();
+    assert.match(await position(page), /1 \/ 1 · ID 257/);
+    assert.ok(await page.locator('.option mark').count() > 0);
+    await page.locator('[data-answer="A"]').click();
+    await page.getByText('Chính xác', { exact: true }).waitFor();
+    if (process.env.MICRO_SCREENSHOTS) {
+      const width = page.viewportSize().width;
+      await page.screenshot({ path: join(process.env.MICRO_SCREENSHOTS, engine + '-unicode-' + width + '.png'),
+        scale: 'css', fullPage: true });
+    }
+    await command(page, 'pause').click();
+    await tab(page, 'answers').click();
+    await page.locator('#query').fill('258');
+    await page.locator('#show-answers').click();
+    await page.getByText(/Tiên lượng AIDS chủ yếu dựa vào yếu tố nào/).waitFor();
+    await page.getByText('Đáp án A · TCD4 giảm.', { exact: true }).waitFor();
+    await tab(page, 'flash').click();
+    await page.locator('#query').fill('259');
+    await startScope(page).click();
+    await page.getByRole('heading', { name: 'HIV thuộc nhóm :' }).waitFor();
+    await command(page, 'flip').click();
+    await page.getByText('Đáp án B · Lentivirus.', { exact: true }).waitFor();
+  };
+  for (const device of [devices['iPhone 13'], devices['iPad (gen 7)']]) await fixture(verify, device);
+});
+
 test('responsive touch targets, swipe routing and offline reopen with all assets', async () => {
   for (const device of [devices['iPhone 13'], devices['iPad (gen 7)'], devices['iPad (gen 7) landscape'], { viewport: { width: 1366, height: 900 } }]) {
     await fixture(async (page, context) => {

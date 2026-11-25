@@ -1,0 +1,527 @@
+[
+  {
+    "id": 104,
+    "field": "A",
+    "page": 7,
+    "before": "O2",
+    "after": "O₂"
+  },
+  {
+    "id": 104,
+    "field": "B",
+    "page": 7,
+    "before": "CO2",
+    "after": "CO₂"
+  },
+  {
+    "id": 104,
+    "field": "C",
+    "page": 7,
+    "before": "NO3 và SO4",
+    "after": "NO₃ và SO₄"
+  },
+  {
+    "id": 120,
+    "field": "question",
+    "page": 8,
+    "before": "Trong công thức trên giá trị N0 được hiểu là gì ?",
+    "after": "Trong công thức trên giá trị N₀ được hiểu là gì ?"
+  },
+  {
+    "id": 197,
+    "field": "B",
+    "page": 13,
+    "before": " - lactamase",
+    "after": "β - lactamase"
+  },
+  {
+    "id": 200,
+    "field": "A",
+    "page": 13,
+    "before": "Lấy một mẫu nhỏ thạch máu có khuẩn lạc cho \nvào H2O2",
+    "after": "Lấy một mẫu nhỏ thạch máu có khuẩn lạc cho \nvào H₂O₂"
+  },
+  {
+    "id": 200,
+    "field": "D",
+    "page": 13,
+    "before": "Cho khuẩn lạc vào H2O2 hơ nóng trên ngọn \nđèn cồn.",
+    "after": "Cho khuẩn lạc vào H₂O₂ hơ nóng trên ngọn \nđèn cồn."
+  },
+  {
+    "id": 210,
+    "field": "A",
+    "page": 14,
+    "before": "Nhạy cảm với bacitracin, tiêu huyết  vòng \nlớn",
+    "after": "Nhạy cảm với bacitracin, tiêu huyết β vòng \nlớn"
+  },
+  {
+    "id": 210,
+    "field": "B",
+    "page": 14,
+    "before": "Nhạy cảm với bacitracin, tiêu huyết  vòng \nvừa",
+    "after": "Nhạy cảm với bacitracin, tiêu huyết β vòng \nvừa"
+  },
+  {
+    "id": 210,
+    "field": "C",
+    "page": 14,
+    "before": "Nhạy cảm với bacitracin, tiêu huyết  vòng \ntrung gian",
+    "after": "Nhạy cảm với bacitracin, tiêu huyết β vòng \ntrung gian"
+  },
+  {
+    "id": 210,
+    "field": "D",
+    "page": 14,
+    "before": "Nhạy cảm với bacitracin, tiêu huyết  vòng \nnhỏ",
+    "after": "Nhạy cảm với bacitracin, tiêu huyết β vòng \nnhỏ"
+  },
+  {
+    "id": 217,
+    "field": "question",
+    "page": 14,
+    "before": "Khi nuôi cấy Streptococcus pneumoniae trên thạch \nmáu thỏ ( 5-10% 5-10%CO2) / ủ 37OC/ 18-24 giờ quan \nsát thấy thấy gì ?",
+    "after": "Khi nuôi cấy Streptococcus pneumoniae trên thạch \nmáu thỏ ( 5-10% 5-10%CO₂) / ủ 37°C/ 18-24 giờ quan \nsát thấy thấy gì ?"
+  },
+  {
+    "id": 217,
+    "field": "A",
+    "page": 15,
+    "before": "Hiện tượng tiêu huyết ",
+    "after": "Hiện tượng tiêu huyết α"
+  },
+  {
+    "id": 217,
+    "field": "B",
+    "page": 15,
+    "before": "Hiện tượng tiêu huyết ",
+    "after": "Hiện tượng tiêu huyết β"
+  },
+  {
+    "id": 223,
+    "field": "A",
+    "page": 15,
+    "before": "5-10% O2.",
+    "after": "5-10% O₂."
+  },
+  {
+    "id": 223,
+    "field": "C",
+    "page": 15,
+    "before": "5-10% CO2.",
+    "after": "5-10% CO₂."
+  },
+  {
+    "id": 227,
+    "field": "B",
+    "page": 15,
+    "before": " - lactamase",
+    "after": "β - lactamase"
+  },
+  {
+    "id": 250,
+    "field": "question",
+    "page": 17,
+    "before": "Mô tả kiểu tiêu huyết  của  cầu khuẩn :",
+    "after": "Mô tả kiểu tiêu huyết α của  cầu khuẩn :"
+  },
+  {
+    "id": 251,
+    "field": "A",
+    "page": 17,
+    "before": "Cho tiêu huyết  thực hiện tiếp trắc nghiệm \nTaxo P, SF, NaCl 7,5%.",
+    "after": "Cho tiêu huyết β thực hiện tiếp trắc nghiệm \nTaxo P, SF, NaCl 7,5%."
+  },
+  {
+    "id": 251,
+    "field": "B",
+    "page": 17,
+    "before": "Cho tiêu huyết  thực hiện tiếp trắc nghiệm \nTaxo P và trắc nghiệm trong mật.",
+    "after": "Cho tiêu huyết γ thực hiện tiếp trắc nghiệm \nTaxo P và trắc nghiệm trong mật."
+  },
+  {
+    "id": 251,
+    "field": "C",
+    "page": 17,
+    "before": "Tiêu huyết  thực hiện tiếp trắc nghiệm \nTaxo A, SF, NaCl 6,5%.",
+    "after": "Tiêu huyết β thực hiện tiếp trắc nghiệm \nTaxo A, SF, NaCl 6,5%."
+  },
+  {
+    "id": 251,
+    "field": "D",
+    "page": 17,
+    "before": "Cho tiêu huyết  thực hiện tiếp trắc nghiệm \nTaxo A, NaCl 7,5%.",
+    "after": "Cho tiêu huyết α thực hiện tiếp trắc nghiệm \nTaxo A, NaCl 7,5%."
+  },
+  {
+    "id": 255,
+    "field": "question",
+    "page": 17,
+    "before": "HIV vaø teá baøo lympho TCD4 :",
+    "after": "HIV và tế bào lympho TCD4 :"
+  },
+  {
+    "id": 255,
+    "field": "A",
+    "page": 17,
+    "before": "CD4 laø thụ thể của HIV, giuùp HIV baùm \nvaøo teá baøo.",
+    "after": "CD₄ là thụ thể của HIV, giúp HIV bám \nvào tế bào."
+  },
+  {
+    "id": 255,
+    "field": "B",
+    "page": 17,
+    "before": "TCD4 laø ñoái töôïng duy nhaát ñeå HIV xaâm \nnhaäp vaø kí sinh.",
+    "after": "TCD₄ là đối tượng duy nhất để HIV xâm \nnhập và kí sinh."
+  },
+  {
+    "id": 255,
+    "field": "C",
+    "page": 17,
+    "before": "TCD4 bò toån thöông vaø suy giaûm naëng neà \ntrong nhieãm HIV.",
+    "after": "TCD₄ bị tổn thương và suy giảm nặng nề \ntrong nhiễm HIV."
+  },
+  {
+    "id": 255,
+    "field": "D",
+    "page": 17,
+    "before": "Haàu heát TCD4 trong maùu coù chöùa HIV trong \nkhi cô theå bò nhieãm HIV.",
+    "after": "Hầu hết TCD4 trong máu có chứa HIV trong \nkhi cơ thể bị nhiễm HIV."
+  },
+  {
+    "id": 256,
+    "field": "question",
+    "page": 17,
+    "before": "Thay ñoåi teá baøo phuï thuoäc heä mieãn dòch khi nhieãm \nHIV :",
+    "after": "Thay đổi tế bào phụ thuộc hệ miễn dịch khi nhiễm \nHIV :"
+  },
+  {
+    "id": 256,
+    "field": "A",
+    "page": 17,
+    "before": "TCD4 giaûm naëng veà soá löôïng.",
+    "after": "TCD₄ giảm nặng về số lượng."
+  },
+  {
+    "id": 256,
+    "field": "B",
+    "page": 17,
+    "before": "TCD4 giaûm naëng veà chöùc naêng hoã trôï.",
+    "after": "TCD₄ giảm nặng về chức năng hỗ trợ."
+  },
+  {
+    "id": 256,
+    "field": "C",
+    "page": 17,
+    "before": "TCD8 taêng cöôøng khaû naêng dieät HIV.",
+    "after": "TCD₈ tăng cường khả năng diệt HIV."
+  },
+  {
+    "id": 256,
+    "field": "D",
+    "page": 17,
+    "before": "Ñaïi thöïc baøo, tieåu thöïc baøo giaûm soá löôïng \nvaø chöùc naêng.",
+    "after": "Đại thực bào, tiểu thực bào giảm số lượng \nvà chức năng."
+  },
+  {
+    "id": 257,
+    "field": "question",
+    "page": 17,
+    "before": "Nhieãm truøng cô hoäi laø gì ?",
+    "after": "Nhiễm trùng cơ hội là gì ?"
+  },
+  {
+    "id": 257,
+    "field": "A",
+    "page": 17,
+    "before": "Laø nhieãm truøng thöôøng xaûy ra khi AIDS",
+    "after": "Là nhiễm trùng thường xảy ra khi AIDS"
+  },
+  {
+    "id": 257,
+    "field": "B",
+    "page": 17,
+    "before": "Laø maéc nhöõng beänh do caùc taùc nhaân ít khi \ngaây beänh ôû ngöôøi bình thöôøng hoaëc chæ gaây \nbeänh nheï.",
+    "after": "Là mắc những bệnh do các tác nhân ít khi \ngây bệnh ở người bình thường hoặc chỉ gây \nbệnh nhẹ."
+  },
+  {
+    "id": 257,
+    "field": "C",
+    "page": 17,
+    "before": "Laø maéc caùc beänh maø taùc nhaân deã bò heä mieãn \ndòch kieàm cheá,",
+    "after": "Là mắc các bệnh mà tác nhân dễ bị hệ miễn \ndịch kiềm chế,"
+  },
+  {
+    "id": 257,
+    "field": "D",
+    "page": 17,
+    "before": "Loaïi tröø neáu ôû ngöôøi khoeû maïnh.",
+    "after": "Loại trừ nếu ở người khoẻ mạnh."
+  },
+  {
+    "id": 258,
+    "field": "question",
+    "page": 17,
+    "before": "Tieân löôïng AIDS chuû yeáu döïa vaøo yếu tố nào ?",
+    "after": "Tiên lượng AIDS chủ yếu dựa vào yếu tố nào ?"
+  },
+  {
+    "id": 258,
+    "field": "A",
+    "page": 17,
+    "before": "TCD4 giaûm.",
+    "after": "TCD4 giảm."
+  },
+  {
+    "id": 258,
+    "field": "B",
+    "page": 17,
+    "before": "TCD4/TCD8 giaûm.",
+    "after": "TCD4/TCD8 giảm."
+  },
+  {
+    "id": 258,
+    "field": "C",
+    "page": 17,
+    "before": "Quan troïng nhaát laø söï suït caân, suy kieät.",
+    "after": "Quan trọng nhất là sự sụt cân, suy kiệt."
+  },
+  {
+    "id": 258,
+    "field": "D",
+    "page": 17,
+    "before": "Möùc ñoä nhieãm khuaån cô hoäi.",
+    "after": "Mức độ nhiễm khuẩn cơ hội."
+  },
+  {
+    "id": 259,
+    "field": "question",
+    "page": 17,
+    "before": "HIV thuoäc nhoùm :",
+    "after": "HIV thuộc nhóm :"
+  },
+  {
+    "id": 260,
+    "field": "question",
+    "page": 17,
+    "before": "Gai nhuù cuûa HIV là :",
+    "after": "Gai nhú của HIV là :"
+  },
+  {
+    "id": 261,
+    "field": "question",
+    "page": 17,
+    "before": "Khaùng nguyeân cuûa HIV deã bò bieán ñoåi laø …?",
+    "after": "Kháng nguyên của HIV dễ bị biến đổi là …?"
+  },
+  {
+    "id": 262,
+    "field": "question",
+    "page": 17,
+    "before": "Genom cuûa HIV laø…?",
+    "after": "Genom của HIV là…?"
+  },
+  {
+    "id": 263,
+    "field": "question",
+    "page": 18,
+    "before": "RT (enzym sao cheùp ngöôïc) ñöôïc duøng ñeå toång \nhôïp gì ?",
+    "after": "RT (enzym sao chép ngược) được dùng để tổng \nhợp gì ?"
+  },
+  {
+    "id": 263,
+    "field": "A",
+    "page": 18,
+    "before": "ADN töø khuoân maãu ADN",
+    "after": "ADN từ khuôn mẫu ADN"
+  },
+  {
+    "id": 263,
+    "field": "B",
+    "page": 18,
+    "before": "ADN töø khuoân maãu ARN",
+    "after": "ADN từ khuôn mẫu ARN"
+  },
+  {
+    "id": 263,
+    "field": "C",
+    "page": 18,
+    "before": "ARD töø khuoân maãu ARN",
+    "after": "ARD từ khuôn mẫu ARN"
+  },
+  {
+    "id": 263,
+    "field": "D",
+    "page": 18,
+    "before": "ARD töø khuoân maãu ADN",
+    "after": "ARD từ khuôn mẫu ADN"
+  },
+  {
+    "id": 264,
+    "field": "question",
+    "page": 18,
+    "before": "HIV baùm vaøo phaân töû CD4 nhôø thành phần nào ?",
+    "after": "HIV bám vào phân tử CD4 nhờ thành phần nào ?"
+  },
+  {
+    "id": 265,
+    "field": "question",
+    "page": 18,
+    "before": "Sau khi HIV ñöôïc giaûi phoùng, teá baøo kí chủ như \nthế nào ?",
+    "after": "Sau khi HIV được giải phóng, tế bào kí chủ như \nthế nào ?"
+  },
+  {
+    "id": 265,
+    "field": "A",
+    "page": 18,
+    "before": "Cheát (thoaùi hoaù)",
+    "after": "Chết (thoái hoá)"
+  },
+  {
+    "id": 265,
+    "field": "B",
+    "page": 18,
+    "before": "Toàn taïi vaø tieáp tuïc toång hôïp HIV",
+    "after": "Tồn tại và tiếp tục tổng hợp HIV"
+  },
+  {
+    "id": 265,
+    "field": "C",
+    "page": 18,
+    "before": "Toàn taïi vaø khoâng coøn laø teá baøo ñích cuûa \nHIV.",
+    "after": "Tồn tại và không còn là tế bào đích của \nHIV."
+  },
+  {
+    "id": 266,
+    "field": "question",
+    "page": 18,
+    "before": "HIV coù trong tế bào nào sau đây ?",
+    "after": "HIV có trong tế bào nào sau đây ?"
+  },
+  {
+    "id": 266,
+    "field": "A",
+    "page": 18,
+    "before": "Teá baøo sinh duïc",
+    "after": "Tế bào sinh dục"
+  },
+  {
+    "id": 266,
+    "field": "B",
+    "page": 18,
+    "before": "Cô",
+    "after": "Cơ"
+  },
+  {
+    "id": 266,
+    "field": "C",
+    "page": 18,
+    "before": "Maùu vaø teá baøo lympho, mono",
+    "after": "Máu và tế bào lympho, mono"
+  },
+  {
+    "id": 266,
+    "field": "D",
+    "page": 18,
+    "before": "Teá baøo môõ.",
+    "after": "Tế bào mỡ."
+  },
+  {
+    "id": 278,
+    "field": "D",
+    "page": 19,
+    "before": "Được bảo quản ở nhiệt độ 2-80C",
+    "after": "Được bảo quản ở nhiệt độ 2-8°C"
+  },
+  {
+    "id": 280,
+    "field": "C",
+    "page": 19,
+    "before": "Phân nếu giữ được ở nhiệt độ 80oC trong \nnhiều năm",
+    "after": "Phân nếu giữ được ở nhiệt độ 80°C trong \nnhiều năm"
+  },
+  {
+    "id": 288,
+    "field": "question",
+    "page": 19,
+    "before": "Poliovirus độc tăng trưởng được ở nhiệt độ\n1. 30oC\n2. 36oC\n3. 40oC\n4. 46oC",
+    "after": "Poliovirus độc tăng trưởng được ở nhiệt độ\n1. 30°C\n2. 36°C\n3. 40°C\n4. 46°C"
+  },
+  {
+    "id": 296,
+    "field": "C",
+    "page": 20,
+    "before": "Mô não được bảo quản – 200C  trong nhiều \nnăm",
+    "after": "Mô não được bảo quản – 20°C  trong nhiều \nnăm"
+  },
+  {
+    "id": 296,
+    "field": "D",
+    "page": 20,
+    "before": "Mô não được bảo quản – 700C  trong nhiều \ntháng",
+    "after": "Mô não được bảo quản – 70°C  trong nhiều \ntháng"
+  },
+  {
+    "id": 303,
+    "field": "A",
+    "page": 20,
+    "before": "40C trong nhiều năm",
+    "after": "4°C trong nhiều năm"
+  },
+  {
+    "id": 303,
+    "field": "B",
+    "page": 20,
+    "before": "360C trong 14 ngày",
+    "after": "36°C trong 14 ngày"
+  },
+  {
+    "id": 303,
+    "field": "C",
+    "page": 20,
+    "before": "1000C trong nhiều tháng",
+    "after": "100°C trong nhiều tháng"
+  },
+  {
+    "id": 340,
+    "field": "A",
+    "page": 23,
+    "before": "[a. gốc] < 25o C",
+    "after": "[a. gốc] < 25°C"
+  },
+  {
+    "id": 340,
+    "field": "B",
+    "page": 23,
+    "before": "[a. gốc] 32o C",
+    "after": "[a. gốc] 32°C"
+  },
+  {
+    "id": 340,
+    "field": "C",
+    "page": 23,
+    "before": "[c. gốc] 35o C",
+    "after": "[c. gốc] 35°C"
+  },
+  {
+    "id": 340,
+    "field": "D",
+    "page": 23,
+    "before": "[d. gốc] 37o C",
+    "after": "[d. gốc] 37°C"
+  },
+  {
+    "id": 466,
+    "field": "C",
+    "page": 31,
+    "before": "Sấy ở 1800 C trong 90 phút",
+    "after": "Sấy ở 180°C trong 90 phút"
+  },
+  {
+    "id": 485,
+    "field": "A",
+    "page": 32,
+    "before": "Nhiệt độ >200 C",
+    "after": "Nhiệt độ >20°C"
+  }
+]

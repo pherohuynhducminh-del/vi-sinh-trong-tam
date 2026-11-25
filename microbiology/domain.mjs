@@ -1,6 +1,6 @@
 export const DAY = 86_400_000;
 export const fold = value => String(value).toLowerCase().normalize('NFD')
-  .replace(/[\u0300-\u036f]/g, '').replace(/đ/g, 'd').trim();
+  .replace(/[\u0300-\u036f]/g, '').replace(/đ/g, 'd').replace(/[₀-₉]/g, digit => String(digit.charCodeAt(0) - 0x2080)).trim();
 export const topicOf = q => q.classification.join(' › ');
 const sections = {
   'Virus học': [

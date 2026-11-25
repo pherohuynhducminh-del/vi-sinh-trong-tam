@@ -1,0 +1,19 @@
+500 câu, 388 trọng tâm, tầng 273/42/73/112, 12 JPEG · 1a8dbb8fc600b83db7dd
+chromium 158.0.8127.0
+chromium cold local navigation: 194 ms
+✔ 500 and 388 sessions, bank switch, exact ID, previous/next and page reload (1388.974874ms)
+✔ topic with one question, empty intersection, filters and full answer sheet (1124.082434ms)
+✔ legacy 387/388 recovery and new remaining shortcut preserve navigation (699.860256ms)
+✔ exam, wrong review, flashcards, study plan, backup roundtrip, appearance and album (1826.251813ms)
+✔ ordered learning cards, wrong review by hierarchy and randomized tier (1019.240856ms)
+✔ coverage presets, multi-tier intersection, local controls and topic ranking (844.620651ms)
+✔ Unicode HIV search, Focus Touch highlighting, answer sheet and flashcards (1705.951963ms)
+✔ responsive touch targets, swipe routing and offline reopen with all assets (2705.955119ms)
+ℹ tests 8
+ℹ suites 0
+ℹ pass 8
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 11885.442044

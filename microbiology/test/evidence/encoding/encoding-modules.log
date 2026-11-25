@@ -1,0 +1,16 @@
+✔ canonical data, exact order, keys, image bytes and captions (2.019544ms)
+✔ domain filters and search preserve ID, source order and valid intersections (1.012786ms)
+✔ session sizes, boundaries, filters and one-question remaining regression (3.068804ms)
+✔ practice feedback, spaced schedule, marking, pause-compatible round trip and flashcard rating (0.585475ms)
+✔ exam response isolation, timeout, submission and cancel (0.425609ms)
+✔ legacy namespaces and V2 migration distinguish exact search from remaining shortcut (6.632059ms)
+✔ priority matrix partitions every ID and all layer combinations preserve order (79.311456ms)
+✔ guards UTF-8 text and preserves the reviewed Vietnamese and scientific notation (1.249596ms)
+ℹ tests 8
+ℹ suites 0
+ℹ pass 8
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 318.290166

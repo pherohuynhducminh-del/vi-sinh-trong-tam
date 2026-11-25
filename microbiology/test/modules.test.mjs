@@ -127,3 +127,23 @@ test('priority matrix partitions every ID and all layer combinations preserve or
     }
   }
 });
+
+test('guards UTF-8 text and preserves the reviewed Vietnamese and scientific notation', async () => {
+  const { unexpectedText } = await import('../text-quality.mjs');
+  const { fold } = await import('../domain.mjs');
+  for (const example of ['Nhieãm', 'vaø', 'dÞch', 'Tiáº¿ng Viá»‡t', '\uFFFD', '\uF062', 'Tiê\u0301ng']) {
+    assert.ok(unexpectedText(example), example);
+  }
+  for (const example of ['Tiếng Việt', '37°C', 'β - lactamase', 'H₂O₂', 'N₀', '12 µm']) {
+    assert.equal(unexpectedText(example), null, example);
+  }
+  assert.equal(bank.byId.get(257).question, 'Nhiễm trùng cơ hội là gì ?');
+  assert.equal(bank.byId.get(258).question, 'Tiên lượng AIDS chủ yếu dựa vào yếu tố nào ?');
+  assert.equal(bank.byId.get(259).question, 'HIV thuộc nhóm :');
+  assert.equal(bank.byId.get(266).options[1].text, 'Cơ');
+  assert.match(bank.byId.get(217).question, /CO₂.*37°C/);
+  assert.deepEqual(bank.byId.get(288).question.match(/\d+°C/g), ['30°C', '36°C', '40°C', '46°C']);
+  assert.equal(fold('H₂O₂'), fold('H2O2'));
+  assert.ok(bank.select({ query: 'h2o2' }).some(q => q.id === 200));
+  assert.ok(bank.select({ query: 'nhiem trung co hoi' }).some(q => q.id === 257));
+});
