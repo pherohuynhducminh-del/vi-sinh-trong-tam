@@ -1,6 +1,6 @@
 const prefix = 'microbiology-rebuild:';
-const version = prefix + '930464bc9e5933ccedbc';
-const assets = ["index.html","style.css","app.mjs","domain.mjs","session.mjs","state.mjs","persistence.mjs","manifest.webmanifest","icon-192.png","icon-512.png","questions.json","images/1.jpg","images/2.jpg","images/3.jpg","images/4.jpg","images/5.jpg","images/6.jpg","images/7.jpg","images/8.jpg","images/9.jpg","images/10.jpg","images/11.jpg","images/12.jpg"];
+const version = prefix + 'e172acc9ed0cea763c69';
+const assets = ["index.html","style.css","app.mjs","domain.mjs","session.mjs","state.mjs","scopes.mjs","persistence.mjs","manifest.webmanifest","icon-192.png","icon-512.png","questions.json","images/1.jpg","images/2.jpg","images/3.jpg","images/4.jpg","images/5.jpg","images/6.jpg","images/7.jpg","images/8.jpg","images/9.jpg","images/10.jpg","images/11.jpg","images/12.jpg"];
 const shell = new URL('index.html', self.registration.scope);
 const urls = new Set(assets.map(asset => new URL(asset, self.registration.scope).href));
 

@@ -11,7 +11,7 @@ function shuffle(ids, random) {
 }
 
 export function startSession(records, progress, {
-  mode, bank, length, minutes = 30, remaining = false, now = Date.now(), random = Math.random
+  mode, bank, length, minutes = 30, remaining = false, randomized = false, now = Date.now(), random = Math.random
 }) {
   let selected = mode === 'flash' ? records.filter(q => q.answer !== null) : records;
   if (remaining) {
@@ -20,7 +20,8 @@ export function startSession(records, progress, {
       ? [...pending, ...selected.filter(q => q.id !== pending[0].id)] : pending;
   }
   let ids = selected.map(q => q.id);
-  if (mode === 'exam') ids = shuffle(ids, random).slice(0, length);
+  if (randomized || mode === 'exam') shuffle(ids, random);
+  if (mode === 'exam') ids = ids.slice(0, length);
   if (!ids.length) return null;
   return {
     mode, bank, ids, position: 0, responses: {}, checked: [], phase: 'active',

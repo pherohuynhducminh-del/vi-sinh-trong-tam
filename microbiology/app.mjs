@@ -1,3 +1,4 @@
+import { learningTree, scopeRecords, scopeStatistics } from './scopes.mjs';
 import { available, createBank, fold, keyOf, score, sectionOf, statistics, topicOf } from './domain.mjs';
 import { currentId } from './session.mjs';
 import { transition } from './state.mjs';
@@ -8,11 +9,14 @@ const esc = value => String(value).replace(/[&<>"']/g, c =>
   ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
 const sorted = values => [...new Set(values)].sort((a, b) => a.localeCompare(b, 'vi'));
 const modes = {
-  study: 'Học theo chủ đề', practice: 'Luyện tập', exam: 'Thi thử',
-  flash: 'Flashcard', wrong: 'Làm lại câu sai', due: 'Ôn ngắt quãng'
+  study: 'Học', practice: 'Học', exam: 'Thi thử',
+  flash: 'Thẻ ghi nhớ', wrong: 'Ôn sai', due: 'Ôn ngắt quãng'
 };
 const filterIds = ['query', 'chapter', 'section', 'topic', 'tier', 'subgroup', 'status'];
 const pageSize = 25;
+const bankViews = { bank: 'Học Vi sinh', exam: 'Thi thử', flash: 'Thẻ ghi nhớ',
+  wrong: 'Ôn sai', answers: 'Xem đáp án' };
+const isBankView = view => Object.hasOwn(bankViews, view);
 
 async function main() {
   const response = await fetch('./questions.json');
@@ -26,12 +30,15 @@ async function main() {
   const saved = store.load();
   let state = saved.state;
   let view = state.session && !state.paused ? 'session' : 'bank';
+  let returnView = { exam: 'exam', flash: 'flash', wrong: 'wrong' }[state.session?.mode] ?? 'bank';
   let notice = saved.notice;
   let page = 0;
   let allAnswers = false;
   let showCard = false;
   let matches = [];
   let pointer = null;
+  const scopeMap = new Map();
+  const expandedScopes = new Set();
 
   const filters = () => Object.fromEntries([
     ['bank', state.selection], ...filterIds.map(id => [id, $(id).value])
@@ -57,7 +64,7 @@ async function main() {
   }
 
   function focusTitle() {
-    document.querySelector('#' + view + '-view h1')?.focus({ preventScroll: true });
+    document.querySelector('#' + (isBankView(view) ? 'bank' : view) + '-view h1')?.focus({ preventScroll: true });
     window.scrollTo(0, 0);
   }
 
@@ -84,6 +91,7 @@ async function main() {
       render();
       return;
     }
+    returnView = isBankView(view) ? view : 'bank';
     save({ ...next, paused: false });
     showCard = false;
     moveTo('session');
@@ -136,23 +144,78 @@ async function main() {
     return output + esc(text.slice(end));
   }
 
+  function strategy() {
+    return view === 'wrong' ? 'wrong' : $('strategy').value;
+  }
+
+  function summaryOf(records) {
+    const stats = scopeStatistics(records, state.progress);
+    return `<p class="scope-counts"><b>${stats.done}/${records.length} đã làm</b> ·
+      ${stats.correct} đúng · ${stats.wrong} sai · ${stats.unseen} chưa làm ·
+      ${stats.unkeyed} chưa có đáp án</p>`;
+  }
+
+  function canStart(records, kind) {
+    return kind === 'remaining' ? available(records, state.progress).length > 0
+      : scopeRecords(records, kind, state.progress).length > 0;
+  }
+
+  function launchScope(records) {
+    const kind = strategy();
+    openSession(kind === 'wrong' || kind === 'due' ? kind : 'study',
+      scopeRecords(records, kind, state.progress),
+      { remaining: kind === 'remaining', randomized: kind === 'random' });
+  }
+
+  function renderTree() {
+    scopeMap.clear();
+    function card(node, children, label, kind) {
+      const name = kind === 'topic' ? node.name.split(' › ').at(-1) : node.name;
+      const key = kind + ':' + node.name;
+      scopeMap.set(key, node.records);
+      return `<article class="scope-card scope-${kind}">
+        <button data-scope="${esc(key)}" ${canStart(node.records, strategy()) ? '' : 'disabled'}>
+          ${esc(name)}
+        </button>
+        ${summaryOf(node.records)}
+        ${children ? `<details data-branch="${esc(key)}" ${expandedScopes.has(key) ? 'open' : ''}>
+          <summary>${label}</summary><div class="scope-children">${children}</div></details>` : ''}
+      </article>`;
+    }
+    const chapters = learningTree(matches).map(chapter => card(chapter,
+      chapter.sections.map(section => card(section,
+        section.topics.map(topic => card(topic, '', '', 'topic')).join(''),
+        'Xem chủ đề', 'section')).join(''),
+      'Xem các mục', 'chapter')).join('');
+    const tiers = [1, 2, 3, 4].map(tier => ({
+      name: 'Tầng ' + tier, records: matches.filter(q => q.tier === tier)
+    })).filter(tier => tier.records.length).map(node => card(node, '', '', 'tier')).join('');
+    $('scope-tree').innerHTML = chapters ? `<h2>Chương và chủ đề</h2><div class="scope-grid">${chapters}</div>
+      <h2>Phân tầng</h2><div class="scope-grid">${tiers}</div>` : '<p>Không tìm thấy câu hỏi.</p>';
+  }
+
   function renderBank() {
     renderFilters();
     matches = bank.select(filters(), state.progress);
+    $('bank-title').textContent = bankViews[view];
     $('match-count').textContent = matches.length + ' câu phù hợp';
-    $('remaining').disabled = !matches.some(q => !state.progress.attempts[q.id]?.labels.length);
-    for (const button of document.querySelectorAll('[data-mode]')) {
-      const mode = button.dataset.mode;
-      button.disabled = !matches.some(q => (mode !== 'flash' || q.answer !== null) &&
-        (mode !== 'wrong' || state.progress.attempts[q.id]?.result === false) &&
-        (mode !== 'due' || due(q)));
-    }
+    $('scope-overview').innerHTML = summaryOf(matches);
+    const hierarchy = view === 'bank' || view === 'wrong';
+    $('learning-options').hidden = view !== 'bank';
+    $('scope-tree').hidden = !hierarchy;
+    $('exam-form').hidden = view !== 'exam';
+    $('answer-list').hidden = view !== 'answers';
+    const start = $('start-scope');
+    start.hidden = !hierarchy && view !== 'flash';
+    start.textContent = ({ bank: 'Học phạm vi đã chọn', flash: 'Bắt đầu thẻ ghi nhớ', wrong: 'Ôn sai trong phạm vi' })[view] ?? '';
+    start.disabled = view === 'flash' ? !matches.some(q => q.answer !== null) : !canStart(matches, strategy());
+    if (hierarchy) renderTree();
     $('exam-start').disabled = !matches.length;
     $('exam-count').max = Math.max(1, matches.length);
     if (+$('exam-count').value > matches.length && matches.length) $('exam-count').value = matches.length;
     const totalPages = Math.ceil(matches.length / pageSize);
     page = Math.min(page, Math.max(0, totalPages - 1));
-    const shown = allAnswers ? matches : matches.slice(page * pageSize, (page + 1) * pageSize);
+    const shown = view !== 'answers' ? [] : allAnswers ? matches : matches.slice(page * pageSize, (page + 1) * pageSize);
     $('results').innerHTML = shown.length ? shown.map(q => `
       <article class="result">
         <button class="open-question" data-open="${q.id}">Câu ${q.number} · ${esc(q.question)}</button>
@@ -183,19 +246,22 @@ async function main() {
     const labels = s.responses[q.id] ?? [];
     const exam = s.mode === 'exam';
     const flash = s.mode === 'flash';
+    const touch = !exam && !flash;
     const marked = state.progress.marked.includes(q.id);
+    const mark = `<button data-command="mark" aria-pressed="${marked}">${marked ? 'Bỏ đánh dấu' : 'Đánh dấu'}</button>`;
     const judged = s.checked.includes(q.id) || s.phase === 'submitted';
-    const reveal = judged || ((flash || s.mode === 'study') && showCard);
+    const reveal = judged || ((flash || touch) && showCard);
     const result = score(q, labels);
     const summary = exam && s.phase === 'submitted' ? examSummary(s) : '';
     const explanation = reveal && q.explanation ? `<details><summary>${esc(q.explanation.title)}</summary>
       <p>${esc(q.explanation.why)}</p><p>${esc(q.explanation.caution)}</p></details>` : '';
     $('session-view').innerHTML = `
-      <div class="row split"><h1 tabindex="-1">${modes[s.mode]}</h1><button data-command="pause">Lưu và thoát</button></div>
+      <div class="row split session-heading"><h1 tabindex="-1">${modes[s.mode]}</h1><button data-command="pause">Lưu và thoát</button></div>
       ${summary}
       <article class="panel question-panel">
         <div class="row split">
           <div id="position">Câu ${s.position + 1} / ${s.ids.length} · ID ${q.id}</div>
+          ${touch ? mark : ''}
           ${exam && !judged ? '<strong id="timer" aria-label="Thời gian còn lại"></strong>' : ''}
         </div>
         <progress aria-label="Vị trí trong phiên" value="${s.position + 1}" max="${s.ids.length}"></progress>
@@ -208,7 +274,7 @@ async function main() {
             const text = !exam || judged ? highlight(option.text, q) : esc(option.text);
             return `<button class="option${answer ? ' is-answer' : ''}" data-answer="${esc(option.label)}" aria-pressed="${active}" ${judged ? 'disabled' : ''}>${esc(option.label)}. ${text}</button>`;
           }).join('')}</div>`}
-        ${s.mode === 'study' && !judged ? `<button data-command="study-reveal" aria-expanded="${showCard}">${showCard ? 'Ẩn đáp án' : 'Xem đáp án'}</button>` : ''}
+        ${touch && !judged ? `<button data-command="study-reveal" aria-expanded="${showCard}">${showCard ? 'Ẩn đáp án' : 'Xem đáp án'}</button>` : ''}
         ${flash && !reveal ? '<button class="primary" data-command="flip">Lật thẻ</button>' : ''}
         ${flash && reveal && !judged ? '<div class="actions"><button data-command="forgot">Chưa nhớ</button><button class="primary" data-command="remembered">Đã nhớ</button></div>' : ''}
         ${flash && judged ? '<p class="feedback">Đã lên lịch ôn thẻ này.</p>' : ''}
@@ -216,17 +282,18 @@ async function main() {
         ${judged && !flash && labels.length ? `<p role="status" class="feedback ${result === false ? 'incorrect' : ''}">${result === null ? 'Chưa chấm vì thiếu khóa' : result ? 'Chính xác' : 'Chưa đúng'}</p>` : ''}
         ${reveal ? answerLine(q) + explanation : ''}
         <div class="actions">
-          <button data-command="mark" aria-pressed="${marked}">${marked ? 'Bỏ đánh dấu' : 'Đánh dấu câu'}</button>
+          ${touch ? '' : mark}
           ${exam && !judged && labels.length ? '<button data-command="clear">Bỏ lựa chọn</button>' : ''}
         </div>
       </article>
-      <div class="panel actions">
+      <div class="panel actions session-navigation">
         <button data-command="previous" ${s.position ? '' : 'disabled'}>Trước</button>
         <button class="primary" data-command="next" ${s.position + 1 < s.ids.length ? '' : 'disabled'}>Tiếp</button>
+        <details class="session-tools"><summary>Công cụ phiên</summary>
         <form id="jump-form" class="actions"><input aria-label="Vị trí cần đến" id="jump-position" type="number" min="1" max="${s.ids.length}" value="${s.position + 1}" required><button>Đến câu</button></form>
-        ${exam && s.phase === 'active' ? '<button data-command="submit">Nộp bài</button>' : ''}
         <button data-command="restart">Khởi động lại</button>
-        <button data-command="cancel">Hủy phiên</button>
+        <button data-command="cancel">Hủy phiên</button></details>
+        ${exam && s.phase === 'active' ? '<button data-command="submit">Nộp bài</button>' : ''}
       </div>`;
     tick();
   }
@@ -284,8 +351,9 @@ async function main() {
     $('theme').setAttribute('aria-pressed', String(state.preferences.theme === 'dark'));
     $('highlight').setAttribute('aria-pressed', String(state.preferences.highlight));
     $('notice').textContent = notice;
-    for (const section of ['bank', 'session', 'progress', 'album']) {
-      $(section + '-view').hidden = section !== view;
+    document.body.classList.toggle('focus-session', view === 'session' && ['study', 'practice', 'wrong', 'due'].includes(state.session.mode));
+    for (const section of ['bank', 'session', 'progress', 'album', 'settings']) {
+      $(section + '-view').hidden = section === 'bank' ? !isBankView(view) : section !== view;
       $(section + '-view').querySelector('h1')?.setAttribute('tabindex', '-1');
     }
     for (const tab of document.querySelectorAll('[data-view]')) {
@@ -294,7 +362,7 @@ async function main() {
     for (const button of document.querySelectorAll('[data-bank]')) {
       button.setAttribute('aria-pressed', String(button.dataset.bank === state.selection));
     }
-    if (view === 'bank') renderBank();
+    if (isBankView(view)) renderBank();
     if (view === 'session') renderSession();
     if (view === 'progress') renderProgress();
   }
@@ -315,7 +383,7 @@ async function main() {
       save({ ...state, paused: false });
       moveTo('session');
     },
-    pause() { moveTo('bank'); },
+    pause() { moveTo(returnView); },
     previous() { navigate(state.session.position - 1, 'previous'); },
     next() { navigate(state.session.position + 1, 'next'); },
     flip() { showCard = true; render(); document.querySelector('[data-command="forgot"]')?.focus(); },
@@ -347,7 +415,7 @@ async function main() {
     cancel() {
       if (confirm('Hủy phiên? Tiến độ đã ghi nhận được giữ lại.')) {
         send({ type: 'cancel' });
-        moveTo('bank');
+        moveTo(returnView);
       }
     }
   };
@@ -362,12 +430,7 @@ async function main() {
       page = 0;
       render();
     }
-    if (data.mode) {
-      const selected = data.mode === 'wrong'
-        ? matches.filter(q => state.progress.attempts[q.id]?.result === false)
-        : data.mode === 'due' ? matches.filter(due) : matches;
-      openSession(data.mode, selected);
-    }
+    if (data.scope) launchScope(scopeMap.get(data.scope));
     if (data.open) openSession('study', [bank.byId.get(Number(data.open))]);
     if (data.page !== undefined) {
       page = +data.page;
@@ -411,7 +474,14 @@ async function main() {
     renderBank();
   };
   $('show-answers').onclick = () => { allAnswers = !allAnswers; renderBank(); };
-  $('remaining').onclick = () => openSession('practice', matches, { remaining: true });
+  $('strategy').onchange = renderBank;
+  $('start-scope').onclick = () => view === 'flash' ? openSession('flash', matches) : launchScope(matches);
+  $('scope-tree').addEventListener('toggle', event => {
+    const branch = event.target.dataset.branch;
+    if (!branch || !event.target.isConnected) return;
+    if (event.target.open) expandedScopes.add(branch);
+    else expandedScopes.delete(branch);
+  }, true);
   $('theme').onclick = () => {
     save({ ...state, preferences: { ...state.preferences, theme: state.preferences.theme === 'dark' ? 'light' : 'dark' } });
     render();
