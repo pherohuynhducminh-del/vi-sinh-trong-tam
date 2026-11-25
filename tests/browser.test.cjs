@@ -267,6 +267,18 @@ for (const [engine, browser] of Object.entries({ chromium, webkit })) {
         }));
         save();
       });
+      const isolated = await quiz.evaluate(() => {
+        const key = STORAGE;
+        const production = window.localStorage;
+        production.setItem(key, 'existing root progress');
+        save();
+        return {
+          root: production.getItem(key),
+          development: JSON.parse(production.getItem('clinical-quiz:' + key)).answers
+        };
+      });
+      assert.equal(isolated.root, 'existing root progress');
+      assert.deepEqual(isolated.development, (await state(quiz)).answers);
       await mode(quiz, 'Thống kê');
       const downloaded = page.waitForEvent('download');
       await byId(quiz, 'exportProgress').click();
@@ -300,7 +312,7 @@ for (const [engine, browser] of Object.entries({ chromium, webkit })) {
       await quiz.evaluate(() => {
         const originalSet = Storage.prototype.setItem;
         Storage.prototype.setItem = function (key, value) {
-          if (key === PREF) throw new DOMException('test', 'QuotaExceededError');
+          if (key === 'clinical-quiz:' + PREF) throw new DOMException('test', 'QuotaExceededError');
           return originalSet.call(this, key, value);
         };
       });

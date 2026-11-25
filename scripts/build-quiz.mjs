@@ -11,6 +11,7 @@ function replaceOnce(source, target, replacement) {
 
 const readScript = name => readFile(new URL('../clinical-quiz/' + name, import.meta.url), 'utf8');
 const session = await readScript('session.js');
+const storage = await readScript('storage.js');
 const banks = await readScript('banks.js');
 let html = await readOriginal();
 const bankPattern = /(?:const hs=|,vs=)("(?:\\.|[^"\\])*")/g;
@@ -18,7 +19,10 @@ const matches = [...html.matchAll(bankPattern)];
 if (matches.length !== 2) throw new Error('Expected two embedded banks.');
 for (const [full, originalLiteral] of matches) {
   const originalBank = JSON.parse(originalLiteral);
-  const patchedBank = originalBank + '\n<script>\n' + session + '</script>\n';
+  const firstScript = originalBank.indexOf('<script>');
+  if (firstScript < 0) throw new Error('Missing embedded script.');
+  const isolatedBank = originalBank.slice(0, firstScript) + '<script>\n' + storage + '</script>\n' + originalBank.slice(firstScript);
+  const patchedBank = isolatedBank + '\n<script>\n' + session + '</script>\n';
   const literal = JSON.stringify(patchedBank).replaceAll('<', '\\u003c');
   html = replaceOnce(html, full, full.slice(0, -originalLiteral.length) + literal);
 }
