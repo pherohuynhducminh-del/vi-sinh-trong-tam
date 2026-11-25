@@ -1,8 +1,8 @@
 const prefix = 'hoa-sinh-2-rc7:';
-const cacheName = prefix + '2';
+const cacheName = prefix + '3';
 const assets = [
   './', './index.html', './styles.css', './bank.js', './state.js', './domain.js',
-  './ui.js', './install.js', './app.webmanifest', './icon-192.png', './icon-512.png'
+  './learning.js', './ui.js', './install.js', './app.webmanifest', './icon-192.png', './icon-512.png'
 ];
 const appUrls = new Set(assets.map(path => new URL(path, self.registration.scope).href));
 

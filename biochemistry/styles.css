@@ -84,3 +84,48 @@ body.focus #quizArea .controls {
 .focus-explanation-collapsed {
   display: none;
 }
+
+/* A compact catalog and one shared surface for study and review sessions. */
+[hidden] { display: none !important; }
+.learning-actions { display: flex; flex-wrap: wrap; gap: 8px; margin: 10px 0; }
+#learningMain > button:first-child { font-weight: 750; }
+#studyCatalog details, #settingsArea details { margin: 10px 0; }
+#studyCatalog summary, #settingsArea summary { padding: 9px 0; cursor: pointer; }
+#learningFilter { padding: 8px 0; }
+#learningFilter label, #examSetup label { display: grid; gap: 4px; min-width: 0; }
+#learningFilter input, #learningFilter select, #examSetup select {
+  min-height: 44px;
+  max-width: 100%;
+  font: inherit;
+}
+#examSetup { flex: 1 1 100%; }
+#examSetup label:has(input[type="checkbox"]) { display: flex; align-items: center; }
+.scope-metrics { display: flex; flex-wrap: wrap; gap: 4px 12px; color: var(--muted); }
+.scope-metrics span { white-space: nowrap; }
+.study-chapter progress, .topic-card progress, #statsContent progress {
+  display: block;
+  width: 100%;
+  height: 8px;
+  margin: 8px 0;
+  accent-color: var(--accent);
+}
+.study-chapter .study-topics { margin-top: 12px; }
+.topic-card { box-sizing: border-box; min-width: 0; cursor: default; }
+.topic-card .topic-open { width: 100%; text-align: left; margin-bottom: 8px; white-space: normal; }
+.topic-summary { margin: 14px 0; }
+#learningBar { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 8px 12px; }
+#learningBar progress { grid-column: 1 / -1; width: 100%; height: 6px; accent-color: var(--accent); }
+.learning-session #quizArea .controls { flex-wrap: nowrap; }
+.learning-session #quizArea .controls button { min-width: 0; }
+.learning-session #quizArea .question { overflow-wrap: anywhere; }
+.learning-session #quizArea .formula { max-width: 100%; overflow-x: auto; }
+.learning-session #quizArea img { max-width: 100%; height: auto; }
+.learning-session .qmeta { flex-wrap: wrap; }
+@media (max-width: 480px) {
+  .learning-session .main { padding-inline: 12px; }
+  .learning-session #quizArea .controls button { padding-inline: 5px; }
+  #learningBar { font-size: .9rem; }
+  #learningFilter label, #examSetup label { flex-basis: 100%; }
+}
+.learning-session #quizArea .opt:disabled { opacity: 1; }
+.learning-session #feedback { scroll-margin: 82px 0 86px; }
