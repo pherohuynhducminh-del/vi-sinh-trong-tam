@@ -1,0 +1,276 @@
+{
+  "structuralGate": "pass",
+  "integrationGate": "blocked",
+  "blockers": [
+    "Identical prompts and ordered options have conflicting keys. Source adjudication required."
+  ],
+  "conflictingKeys": {
+    "hoa-sinh-2": [
+      [
+        82,
+        83
+      ]
+    ],
+    "vi-sinh": [
+      [
+        424,
+        428
+      ]
+    ]
+  },
+  "datasetVersion": "1.0.0",
+  "sourceCommit": "c4668de7f189c8fff29f1fa65be1a3e6c86f32dd",
+  "sourceSha256": "ed9205578d42b736ddc3d42d5e386b1521f597700b35aaef70dafc5640ac3123",
+  "copyDifferencesVsThenHs": {
+    "questions": [
+      [
+        407,
+        431,
+        443,
+        448,
+        450
+      ],
+      []
+    ],
+    "keys": [
+      [
+        407,
+        431,
+        443,
+        448,
+        450
+      ],
+      []
+    ],
+    "explanations": [
+      [],
+      []
+    ],
+    "topics": [
+      [
+        407,
+        431,
+        443,
+        448,
+        450
+      ],
+      []
+    ]
+  },
+  "priorityCounts": {
+    "1": 273,
+    "2": 42,
+    "3": 73,
+    "4": 112
+  },
+  "banks": {
+    "hoa-sinh-2": {
+      "views": {
+        "all": 296
+      },
+      "missingKeys": [
+        73,
+        213,
+        217,
+        230,
+        232,
+        236,
+        246,
+        296
+      ],
+      "missingOptions": [
+        213,
+        230,
+        236
+      ],
+      "explanationCount": 296,
+      "duplicatePromptAndOptions": [
+        [
+          82,
+          83
+        ]
+      ],
+      "topics": {
+        "Chương 1 · Kỹ thuật xét nghiệm › An toàn phòng thí nghiệm": 7,
+        "Chương 1 · Kỹ thuật xét nghiệm › Định lượng quang học": 4,
+        "Chương 1 · Kỹ thuật xét nghiệm › Dụng cụ": 5,
+        "Chương 1 · Kỹ thuật xét nghiệm › Xử lý và bảo quản mẫu máu": 4,
+        "Chương 1 · Kỹ thuật xét nghiệm › Thu thập và bảo quản nước tiểu": 5,
+        "Chương 1 · Kỹ thuật xét nghiệm › Lấy dịch vị": 2,
+        "Chương 2 · Glucid › Phản ứng Fehling": 4,
+        "Chương 2 · Glucid › Phản ứng Molish": 1,
+        "Glucid › Phản ứng iod và Lugol": 2,
+        "Chương 2 · Glucid › Phản ứng màu polysaccharid với iod": 3,
+        "Chương 2 · Glucid › Định lượng glucose Somoyi Nelson": 5,
+        "Chương 2 · Glucid › Glucose máu": 4,
+        "Chương 2 · Glucid › Glucose nước tiểu – Benedict": 8,
+        "Glucid › Benedict": 3,
+        "Kỹ thuật xét nghiệm › Phương pháp đo quang": 3,
+        "Lipid › Cholesterol và lipoprotein": 38,
+        "Lipid › Triglycerid": 16,
+        "Hóa sinh lâm sàng › Nước tiểu": 27,
+        "Protein › Định lượng Biuret": 6,
+        "Protein › Giá trị và biến đổi lâm sàng": 6,
+        "Hóa sinh lâm sàng › Acid uric": 16,
+        "Acid uric › Định lượng và giá trị": 5,
+        "Ure › Định lượng và pha loãng": 2,
+        "Hóa sinh lâm sàng › Ure": 9,
+        "Ure và creatinin › Diễn giải lâm sàng": 2,
+        "Creatinin › Định lượng và giá trị": 2,
+        "Hóa sinh lâm sàng › Creatinin": 10,
+        "Nước tiểu › Que thử glucose": 5,
+        "Nước tiểu › pH": 2,
+        "Nước tiểu › Que thử bilirubin": 1,
+        "Hóa sinh lâm sàng › Bilirubin và vàng da": 9,
+        "Nước tiểu › Phản ứng Mayer": 4,
+        "Enzym › Transaminase": 19,
+        "Enzym › Nhồi máu cơ tim": 1,
+        "Nước tiểu › Cặn lắng và kính hiển vi": 4,
+        "Enzym › Amylase": 25,
+        "Enzym › CK-MB": 6,
+        "Dịch sinh học › Phản ứng Rivalta": 2,
+        "Glucid › Molish": 2,
+        "Hóa sinh lâm sàng › Giá trị tham chiếu tổng hợp": 2,
+        "Kỹ thuật xét nghiệm › Phức màu quinonemine": 4,
+        "Glucid › Phản ứng Molish và Fehling": 2,
+        "Glucid › Glucose": 2,
+        "Kỹ thuật xét nghiệm › An toàn phòng thí nghiệm": 2,
+        "Glucid › Somogyi–Nelson": 1,
+        "Kỹ thuật xét nghiệm › Bảo quản mẫu": 2,
+        "Nước tiểu › Thể ceton": 1,
+        "Protein › Loại protein khỏi mẫu": 1
+      },
+      "singletonTopics": {
+        "Chương 2 · Glucid › Phản ứng Molish": 32,
+        "Nước tiểu › Que thử bilirubin": 152,
+        "Enzym › Nhồi máu cơ tim": 180,
+        "Glucid › Somogyi–Nelson": 238,
+        "Nước tiểu › Thể ceton": 259,
+        "Protein › Loại protein khỏi mẫu": 292
+      }
+    },
+    "vi-sinh": {
+      "views": {
+        "all": 500,
+        "focus": 388,
+        "supplement": 112
+      },
+      "missingKeys": [
+        340,
+        394
+      ],
+      "missingOptions": [],
+      "explanationCount": 24,
+      "duplicatePromptAndOptions": [
+        [
+          424,
+          428
+        ],
+        [
+          426,
+          431
+        ],
+        [
+          439,
+          443
+        ],
+        [
+          444,
+          448
+        ]
+      ],
+      "topics": {
+        "Virus học › Cúm": 11,
+        "Virus học › Virus hô hấp, sởi, quai bị, rubella": 35,
+        "Virus học › Sởi": 6,
+        "Virus học › Quai bị": 5,
+        "Virus học › Rubella": 3,
+        "Vi khuẩn học › Đường ruột": 24,
+        "Virus học › Virus hợp bào": 1,
+        "Vi khuẩn học › Cấu trúc, sinh lý, sinh trưởng": 76,
+        "Vi khuẩn học › Bạch hầu": 20,
+        "Miễn dịch › Phản ứng huyết thanh": 8,
+        "Miễn dịch › ELISA": 1,
+        "Virus học › Cấu trúc và thành phần": 14,
+        "Vi khuẩn học › Bám dính và độc lực": 1,
+        "Vi khuẩn học › Di truyền và đột biến": 6,
+        "Virus học › Nuôi cấy tế bào": 2,
+        "Virus học › Nhân lên và hậu quả": 3,
+        "Virus học › Miễn dịch và interferon": 6,
+        "Virus học › Phòng và điều trị": 2,
+        "Virus học › Chẩn đoán": 2,
+        "Virus học › Thực khuẩn thể": 3,
+        "Virus học › Đặc tính chung": 4,
+        "Virus học › Biểu hiện bệnh và hướng mô": 3,
+        "Virus học › Biến đổi kháng nguyên": 1,
+        "Vi khuẩn học › Tụ cầu": 14,
+        "Vi khuẩn học › Liên cầu và phế cầu": 15,
+        "Vi khuẩn học › Cầu khuẩn và Neisseria": 4,
+        "Vi khuẩn học › Neisseria": 5,
+        "Vi khuẩn học › Haemophilus và trực khuẩn mủ xanh": 4,
+        "Vi khuẩn học › Giang mai": 14,
+        "Vi khuẩn học › Cầu khuẩn": 3,
+        "Virus học › HIV": 18,
+        "Virus học › Rotavirus": 12,
+        "Virus học › Poliovirus": 14,
+        "Virus học › Virus dại": 9,
+        "Virus học › Adenovirus": 4,
+        "Virus học › Viêm gan": 20,
+        "Vi khuẩn học › Dịch hạch": 7,
+        "Kháng sinh › Cơ chế và đề kháng": 29,
+        "Vi sinh đại cương › Khử trùng và tiệt trùng": 7,
+        "Virus học › Viêm não Nhật Bản": 2,
+        "Miễn dịch › Vaccin và giải độc tố": 8,
+        "Miễn dịch › Miễn dịch đặc hiệu": 2,
+        "Vi khuẩn học › Độc tố và yếu tố độc lực": 8,
+        "Vi sinh đại cương › Người lành mang trùng": 1,
+        "Vi sinh đại cương › Nhiễm khuẩn bệnh viện": 5,
+        "Miễn dịch › Kháng huyết thanh": 6,
+        "Vi khuẩn học › Lao": 20,
+        "Vi khuẩn học › Kỵ khí": 10,
+        "Vi khuẩn học › Lao và phong": 6,
+        "Vi khuẩn học › Phong": 1,
+        "Kháng sinh › Beta-lactam": 1,
+        "Virus học › Dengue và miễn dịch": 3,
+        "Virus học › Dengue": 7,
+        "Virus học › Cúm và HIV": 4
+      },
+      "singletonTopics": {
+        "Virus học › Virus hợp bào": 57,
+        "Miễn dịch › ELISA": 146,
+        "Vi khuẩn học › Bám dính và độc lực": 152,
+        "Virus học › Biến đổi kháng nguyên": 193,
+        "Vi sinh đại cương › Người lành mang trùng": 387,
+        "Vi khuẩn học › Phong": 434,
+        "Kháng sinh › Beta-lactam": 468
+      }
+    }
+  },
+  "mediaCount": 12,
+  "id497": {
+    "bankId": "vi-sinh",
+    "priority": {
+      "tier": 1,
+      "group": "1",
+      "flag": false,
+      "reason": "Giữ cốt lõi"
+    },
+    "topic": "Virus học › Cúm và HIV",
+    "topicIds": [
+      492,
+      495,
+      497,
+      499
+    ],
+    "focusTopicIds": [
+      497,
+      499
+    ],
+    "focusIdLookup": [
+      497
+    ],
+    "focusSavedSingleton": [
+      497
+    ]
+  }
+}
