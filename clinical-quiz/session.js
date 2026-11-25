@@ -52,7 +52,7 @@
       render();
       return;
     }
-    if (S.mode === 'practice') expandPractice();
+    if (S.mode === 'practice' || S.mode === 'review') expandPractice();
   };
   const resumeStudy = $('resumeFocus');
   const legacyResume = resumeStudy.onclick;
@@ -82,7 +82,7 @@
   render = function () {
     renderSession();
     expand.textContent = S.mode === 'study' ? 'Về danh mục chủ đề' : 'Tiếp tục các câu trong phạm vi';
-    if (S.mode === 'review' || (S.mode === 'study' && !S.studyTopic)) expand.hidden = true;
+    if (S.mode === 'study' && !S.studyTopic) expand.hidden = true;
     if (document.body.classList.contains('session-home')) {
       const saved = readSnapshot(studyKey);
       const savedPractice = readSnapshot(practiceKey(IS_VS && STRATEGIC ? 'focus' : 'normal'));
