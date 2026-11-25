@@ -1,0 +1,3 @@
+chromium 156.0.8078.79: HTTP 200, ID 497 1/388, Tiếp enabled, diagnostics 3B.1 available
+Skipping host requirements validation logic because `PLAYWRIGHT_SKIP_VALIDATE_HOST_REQUIREMENTS` env variable is set.
+webkit 26.5: HTTP 200, ID 497 1/388, Tiếp enabled, diagnostics 3B.1 available

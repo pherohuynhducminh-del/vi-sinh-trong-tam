@@ -1,0 +1,14 @@
+{
+  path: '/old',
+  title: 'Câu 1 / 1 · ID 497',
+  question: 'Gen mã hóa p24 là:',
+  prevDisabled: true,
+  nextDisabled: true
+}
+{
+  path: '/new',
+  title: 'Câu 1 / 388 · ID 497',
+  question: 'Gen mã hóa p24 là:',
+  prevDisabled: true,
+  nextDisabled: false
+}
