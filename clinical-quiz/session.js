@@ -3,6 +3,14 @@
   const practiceKeys = IS_VS ? ['normal', 'focus'] : ['normal'];
   const studyKey = IS_VS ? 'vs_focus_resume_v1' : 'hs2_focus_resume_v1';
   const practiceKey = variant => STORAGE + '_practice23_' + variant;
+  window.addEventListener('pagehide', () => {
+    if (S.mode !== 'practice' || !document.body.classList.contains('session-running')) return;
+    const filters = Object.fromEntries(['filter', 'topicFilter', 'formatFilter', 'search', 'scope20']
+      .filter(id => $(id)).map(id => [id, $(id).value]));
+    const snapshot = { current: S.current, session: S.session, submitted: S.submitted, filters };
+    try { localStorage.setItem(practiceKey(STRATEGIC ? 'focus' : 'normal'), JSON.stringify(snapshot)); } catch {}
+  });
+
   const validId = id => Number.isInteger(id) && Boolean(qBy(id));
   const object = value => value !== null && typeof value === 'object' && !Array.isArray(value);
   const requireValid = condition => { if (!condition) throw new Error('invalid backup'); };
