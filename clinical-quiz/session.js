@@ -8,7 +8,7 @@
     const filters = Object.fromEntries(['filter', 'topicFilter', 'formatFilter', 'search', 'scope20']
       .filter(id => $(id)).map(id => [id, $(id).value]));
     const snapshot = { current: S.current, session: S.session, submitted: S.submitted, filters };
-    try { localStorage.setItem(practiceKey(STRATEGIC ? 'focus' : 'normal'), JSON.stringify(snapshot)); } catch {}
+    try { localStorage.setItem(practiceKey(IS_VS && STRATEGIC ? 'focus' : 'normal'), JSON.stringify(snapshot)); } catch {}
   });
 
   const validId = id => Number.isInteger(id) && Boolean(qBy(id));
