@@ -60,21 +60,27 @@ export async function canonical() {
   });
   assert.deepEqual([1, 2, 3, 4].map(t => records.filter(q => q.tier === t).length), [273, 42, 73, 112]);
   assert.deepEqual(records.filter(q => q.answer === null).map(q => q.id), [340, 394]);
-  return { records, images };
+  const captions = [...bank.matchAll(/data-src="__CQ_IMAGE_(\d+)__" alt="([^"]+)"[\s\S]*?<figcaption><small>([^<]+)<\/small>[\s\S]*?<p>([^<]+)<\/p><\/details>/g)]
+    .map(([, index, alt, reference, title], position) => {
+      assert.equal(Number(index), position);
+      return { alt, reference, title };
+    });
+  assert.equal(captions.length, images.length);
+  return { records, images, captions };
 }
 
 const assets = ['index.html', 'style.css', 'app.mjs', 'domain.mjs', 'session.mjs', 'state.mjs',
   'persistence.mjs', 'manifest.webmanifest', 'icon-192.png', 'icon-512.png'];
 
 export async function build(output) {
-  const { records, images } = await canonical();
+  const { records, images, captions } = await canonical();
   const directory = resolve(output, 'microbiology');
   await mkdir(resolve(directory, 'images'), { recursive: true });
   const files = new Map();
   for (const asset of assets) {
     files.set(asset, await readFile(new URL(asset, import.meta.url)));
   }
-  files.set('questions.json', JSON.stringify(records));
+  files.set('questions.json', JSON.stringify({ records, captions }));
   images.forEach((image, index) => files.set('images/' + (index + 1) + '.jpg', image));
   const digest = createHash('sha256');
   for (const [name, bytes] of files) {

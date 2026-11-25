@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#11675b">
+  <link rel="manifest" href="./manifest.webmanifest">
+  <link rel="apple-touch-icon" href="./icon-192.png">
+  <link rel="stylesheet" href="./style.css">
+  <title>Vi sinh · Ôn tập</title>
+</head>
+<body>
+  <header class="header">
+    <div class="shell top">
+      <a href="./" class="brand"><img src="./icon-192.png" alt="" width="38" height="38"> Vi sinh</a>
+      <div class="top-tools">
+        <button id="highlight" aria-pressed="false">Từ khóa</button>
+        <button id="theme" aria-pressed="false">Giao diện tối</button>
+      </div>
+    </div>
+    <nav class="shell tabs" aria-label="Mục chính">
+      <button data-view="bank" aria-current="page">Ngân hàng</button>
+      <button data-view="progress">Tiến độ</button>
+      <button data-view="album">Thực hành</button>
+    </nav>
+  </header>
+  <main class="shell">
+    <p id="notice" role="status"></p>
+    <div id="offline" class="status" role="status" hidden></div>
+    <section id="bank-view">
+      <div class="hero">
+        <div><h1>Ngân hàng Vi sinh</h1><p>Chọn phạm vi và cách ôn tập.</p></div>
+        <fieldset class="bank-switch">
+          <legend>Ngân hàng</legend>
+          <button data-bank="all" aria-pressed="true">Toàn bộ · 500</button>
+          <button data-bank="focus" aria-pressed="false">Trọng tâm · 388</button>
+        </fieldset>
+      </div>
+      <div id="resume-area"></div>
+      <div class="layout">
+        <aside class="panel">
+          <h2>Phạm vi</h2>
+          <div class="filters">
+            <label>Tìm câu hỏi <input type="search" id="query" placeholder="Từ khóa hoặc ID câu" autocomplete="off"></label>
+            <label>Chương <select id="chapter"></select></label>
+            <label>Chủ đề <select id="topic"></select></label>
+            <label>Tầng <select id="tier"><option value="">Tất cả</option></select></label>
+            <label>Nhóm phân tầng <select id="section"></select></label>
+            <label>Tiến độ <select id="status"><option value="">Tất cả</option><option value="marked">Đã đánh dấu</option><option value="wrong">Câu sai</option><option value="due">Đến hạn ôn</option></select></label>
+          </div>
+          <button id="reset">Xóa bộ lọc</button>
+        </aside>
+        <div class="bank-content">
+          <div class="panel">
+            <h2 id="match-count" aria-live="polite"></h2>
+            <div class="actions">
+              <button class="primary" data-mode="study">Học theo chủ đề</button>
+              <button class="primary" data-mode="practice">Luyện tập</button>
+              <button data-mode="flash">Flashcard</button>
+              <button data-mode="wrong">Làm lại câu sai</button>
+              <button data-mode="due">Ôn ngắt quãng</button>
+              <button id="remaining">Học tiếp câu chưa làm</button>
+            </div>
+            <form id="exam-form" class="actions exam-form">
+              <label>Số câu thi <input id="exam-count" type="number" value="20" min="1" max="500" required></label>
+              <label>Thời gian (phút) <input id="exam-minutes" type="number" value="30" min="1" max="180" required></label>
+              <button id="exam-start">Bắt đầu thi thử</button>
+            </form>
+          </div>
+          <div class="panel">
+            <div class="row list-head"><h2>Danh sách câu hỏi</h2><button id="show-answers" aria-pressed="false">Hiện toàn bộ đáp án</button></div>
+            <div id="results"></div>
+            <div class="actions pager" id="result-pages"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+    <section id="session-view" hidden aria-label="Phiên học"></section>
+    <section id="progress-view" hidden>
+      <h1>Tiến độ</h1>
+      <div id="statistics"></div>
+      <div class="layout two">
+        <section class="panel">
+          <h2>Kế hoạch học</h2>
+          <form id="plan-form">
+            <label>Ngày thi <input id="plan-date" type="date" required></label>
+            <label>Số câu mỗi ngày <input id="plan-count" type="number" min="1" max="500" value="20" required></label>
+            <label>Phút mỗi ngày <input id="plan-minutes" type="number" min="1" max="720" value="30" required></label>
+            <div class="actions"><button class="primary">Lưu kế hoạch</button><button type="button" id="run-plan">Học theo kế hoạch</button></div>
+          </form>
+          <p id="plan-summary"></p>
+        </section>
+        <section class="panel">
+          <h2>Sao lưu tiến độ</h2>
+          <div class="actions"><button id="export">Xuất bản sao lưu</button><button id="import">Nhập bản sao lưu</button></div>
+          <input id="backup-file" type="file" accept=".json,application/json" hidden>
+          <h2>Kết quả thi thử</h2>
+          <div id="exam-history"></div>
+        </section>
+      </div>
+    </section>
+    <section id="album-view" hidden><h1>Hình ảnh thực hành</h1><div id="album" class="album"></div></section>
+  </main>
+  <dialog id="zoom"><form method="dialog"><button aria-label="Đóng hình">Đóng</button></form><img alt=""></dialog>
+  <script type="module" src="./app.mjs"></script>
+</body>
+</html>
