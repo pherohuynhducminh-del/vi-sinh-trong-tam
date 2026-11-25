@@ -213,7 +213,7 @@ async function main() {
         ${flash && reveal && !judged ? '<div class="actions"><button data-command="forgot">Chưa nhớ</button><button class="primary" data-command="remembered">Đã nhớ</button></div>' : ''}
         ${flash && judged ? '<p class="feedback">Đã lên lịch ôn thẻ này.</p>' : ''}
         ${q.multi && !exam && !flash && !judged ? `<button class="primary" data-command="check" ${labels.length ? '' : 'disabled'}>Kiểm tra đáp án</button>` : ''}
-        ${judged && !flash && labels.length ? `<p class="feedback ${result === false ? 'incorrect' : ''}">${result === null ? 'Chưa chấm vì thiếu khóa' : result ? 'Chính xác' : 'Chưa đúng'}</p>` : ''}
+        ${judged && !flash && labels.length ? `<p role="status" class="feedback ${result === false ? 'incorrect' : ''}">${result === null ? 'Chưa chấm vì thiếu khóa' : result ? 'Chính xác' : 'Chưa đúng'}</p>` : ''}
         ${reveal ? answerLine(q) + explanation : ''}
         <div class="actions">
           <button data-command="mark" aria-pressed="${marked}">${marked ? 'Bỏ đánh dấu' : 'Đánh dấu câu'}</button>
@@ -304,11 +304,11 @@ async function main() {
     showCard = false;
     send({ type: 'move', position });
     render();
+    document.querySelector('.question-panel')?.scrollIntoView({ block: 'start' });
     const nextControl = document.querySelector('[data-command="' + direction + '"]:not(:disabled)');
     (nextControl ?? document.querySelector('#session-view h1'))?.focus({ preventScroll: true });
   }
 
-  const commandFocus = name => document.querySelector('[data-command= + name + ]')?.focus();
   const commands = {
     resume() {
       showCard = false;
@@ -322,7 +322,7 @@ async function main() {
     'study-reveal'() {
       showCard = !showCard;
       render();
-      commandFocus('study-reveal');
+      document.querySelector('[data-command=study-reveal]')?.focus();
     },
     forgot() { send({ type: 'recall', remembered: false }); render(); },
     remembered() { send({ type: 'recall', remembered: true }); render(); },
