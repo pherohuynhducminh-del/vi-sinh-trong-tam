@@ -54,11 +54,44 @@
     }
     if (S.mode === 'practice') expandPractice();
   };
+  const resumeStudy = $('resumeFocus');
+  const legacyResume = resumeStudy.onclick;
+  const canResumeStudy = snapshot => snapshot && ['study', 'review'].includes(snapshot.mode);
+  resumeStudy.onclick = () => {
+    const snapshot = readSnapshot(studyKey);
+    if (S.examActive || !snapshot) return;
+    if (!canResumeStudy(snapshot)) return legacyResume();
+    let saved;
+    try { saved = validateSession(snapshot, true); } catch { return; }
+    const scopeControl = $('scope20');
+    if (scopeControl && saved.filters.scope20 && scopeControl.value !== saved.filters.scope20) {
+      scopeControl.value = saved.filters.scope20;
+      scopeControl.dispatchEvent(new Event('change'));
+    }
+    for (const [id, value] of Object.entries(saved.filters)) if ($(id)) $(id).value = value;
+    const { current, mode, session, studyTopic, submitted } = saved;
+    Object.assign(S, { current, mode, session, studyTopic, submitted });
+    $('sessionLabel').textContent = 'Tiếp tục học';
+    window.focusShow('run');
+    render();
+  };
+
   const renderSession = render;
   render = function () {
     renderSession();
     expand.textContent = S.mode === 'study' ? 'Về danh mục chủ đề' : 'Tiếp tục các câu trong phạm vi';
     if (S.mode === 'review' || (S.mode === 'study' && !S.studyTopic)) expand.hidden = true;
+    if (document.body.classList.contains('session-home')) {
+      const saved = readSnapshot(studyKey);
+      const savedPractice = readSnapshot(practiceKey(IS_VS && STRATEGIC ? 'focus' : 'normal'));
+      resumeStudy.hidden = !canResumeStudy(saved) && !(saved?.mode === 'practice' && !savedPractice);
+    } else if (document.body.classList.contains('session-running') && canResumeStudy(S) && $('scope20')) {
+      const saved = readSnapshot(studyKey);
+      if (saved?.mode === S.mode && saved.filters && saved.filters.scope20 !== $('scope20').value) {
+        saved.filters.scope20 = $('scope20').value;
+        try { localStorage.setItem(studyKey, JSON.stringify(saved)); } catch {}
+      }
+    }
   };
 
   // Keep the original controls reachable within the existing statistics screen.
