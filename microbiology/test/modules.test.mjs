@@ -106,3 +106,24 @@ test('legacy namespaces and V2 migration distinguish exact search from remaining
   assert.throws(() => importBackup(bank, { ...progress, bank: 'hoa-sinh-2-296' }));
   assert.throws(() => importBackup(bank, { ...old, session: { ...old.session, ids: [999] } }));
 });
+
+test('priority matrix partitions every ID and all layer combinations preserve order', async () => {
+  const { canonical } = await import('../build.mjs');
+  const { learningTree, inTiers, coverage, tierBreakdown } = await import('../scopes.mjs');
+  const { records } = await canonical();
+  const matrix = learningTree(records).flatMap(c => c.sections.flatMap(s => s.topics));
+  const ids = matrix.flatMap(node => node.records.map(q => q.id));
+  assert.equal(ids.length, 500);
+  assert.equal(new Set(ids).size, 500);
+  assert.deepEqual(coverage.map(tiers => inTiers(records, tiers).length), [273, 315, 388, 500]);
+  for (const { records: questions } of matrix) {
+    const tiers = tierBreakdown(questions, { attempts: {} });
+    assert.equal(tiers.reduce((sum, tier) => sum + tier.total, 0), questions.length);
+    for (let mask = 0; mask < 16; mask++) {
+      const selected = [1, 2, 3, 4].filter(tier => mask & (1 << (tier - 1)));
+      const result = inTiers(questions, selected);
+      assert.equal(result.length, tiers.filter(t => selected.includes(t.tier)).reduce((sum, t) => sum + t.total, 0));
+      assert.deepEqual(result.map(q => q.id), questions.filter(q => selected.includes(q.tier)).map(q => q.id));
+    }
+  }
+});

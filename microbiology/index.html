@@ -37,6 +37,10 @@
           <button data-bank="focus" aria-pressed="false">Trọng tâm · 388</button>
         </fieldset>
       </div>
+      <section id="tier-picker" class="panel" aria-label="Chọn tầng học">
+        <div id="global-tiers" class="tier-options"></div>
+        <div id="coverage-presets" class="actions"></div>
+      </section>
       <div id="resume-area"></div>
       <details id="scope-filters" class="panel">
         <summary>Tìm kiếm và lọc phạm vi</summary>
@@ -46,7 +50,7 @@
             <label>Chương <select id="chapter"></select></label>
             <label>Mục <select id="section"></select></label>
             <label>Chủ đề <select id="topic"></select></label>
-            <label>Tầng <select id="tier"><option value="">Tất cả</option></select></label>
+            <label id="single-tier">Tầng <select id="tier"><option value="">Tất cả</option></select></label>
             <label>Nhóm phân tầng <select id="subgroup"></select></label>
             <label>Tiến độ <select id="status"><option value="">Tất cả</option><option value="marked">Đã đánh dấu</option><option value="wrong">Câu sai</option><option value="due">Đến hạn ôn</option></select></label>
           </div>
@@ -72,6 +76,13 @@
               <button id="exam-start">Bắt đầu thi thử</button>
             </form>
           </div>
+          <label id="sort-label">Sắp xếp chủ đề
+            <select id="topic-sort">
+              <option value="">Thứ tự kiến thức</option><option value="tier1">Số câu tầng 1</option>
+              <option value="focus">Số câu trọng tâm</option><option value="ratio">Tỷ lệ tầng 1</option>
+              <option value="unseen">Câu chưa làm</option><option value="wrong">Câu sai</option>
+            </select>
+          </label>
           <div id="scope-tree"></div>
           <div id="answer-list" class="panel">
             <div class="row list-head"><h2>Danh sách câu hỏi</h2><button id="show-answers" aria-pressed="false">Hiện toàn bộ đáp án</button></div>

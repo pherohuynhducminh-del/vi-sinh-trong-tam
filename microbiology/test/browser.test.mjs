@@ -264,9 +264,9 @@ test('ordered learning cards, wrong review by hierarchy and randomized tier', as
       ['Vi sinh đại cương', 'Vi khuẩn học', 'Virus học', 'Miễn dịch', 'Kháng sinh']);
     await tab(page, 'wrong').click();
     const chapter = page.locator('.scope-chapter').filter({ has: page.locator('[data-scope="chapter:Virus học"]') });
-    await chapter.locator(':scope > details > summary').click();
+    await chapter.getByText('Xem các mục', { exact: true }).click();
     const section = page.locator('.scope-section').filter({ has: page.locator('[data-scope="section:Các nhóm virus"]') });
-    await section.locator(':scope > details > summary').click();
+    await section.getByText('Xem chủ đề', { exact: true }).click();
     for (const scope of ['topic:Virus học › Cúm và HIV', 'section:Các nhóm virus', 'chapter:Virus học', 'tier:Tầng 1']) {
       await page.locator(`[data-scope="${scope}"]`).click();
       assert.match(await position(page), /1 \/ 1 · ID 497/);
@@ -284,6 +284,33 @@ test('ordered learning cards, wrong review by hierarchy and randomized tier', as
   });
 });
 
+test('coverage presets, multi-tier intersection, local controls and topic ranking', async () => {
+  await fixture(async page => {
+    await bank(page);
+    for (const [index, count] of [273, 315, 388, 500].entries()) {
+      await page.locator(`[data-coverage="${index}"]`).click();
+      assert.match(await page.locator('#match-count').innerText(), new RegExp('^' + count));
+      if (index < 3) assert.equal(await page.locator('#global-tiers input[value="4"]').count(), 0);
+    }
+    await page.locator('[data-coverage="2"]').click();
+    await page.locator('#global-tiers input[value="2"]').uncheck();
+    assert.match(await page.locator('#match-count').innerText(), /^346/);
+    await startScope(page).click();
+    const session = (await dataState(page)).session;
+    const { records } = await canonical();
+    assert.deepEqual(session.ids, records.filter(q => [1, 3].includes(q.tier)).map(q => q.id));
+    await command(page, 'pause').click();
+    await page.locator('#topic-sort').selectOption('tier1');
+    assert.match(await page.locator('.scope-topic').first().innerText(), /Hạng 1 · /);
+    const card = page.locator('.scope-topic').filter({ has: page.locator('[data-scope="topic:Virus học › Cúm và HIV"]') });
+    await card.locator('summary').click();
+    await card.locator('[data-local-coverage="0"]').click();
+    await card.locator('form button[type="submit"]').click();
+    assert.deepEqual((await dataState(page)).session.ids,
+      records.filter(q => q.classification.join(' › ') === 'Virus học › Cúm và HIV' && q.tier === 1).map(q => q.id));
+  });
+});
+
 test('responsive touch targets, swipe routing and offline reopen with all assets', async () => {
   for (const device of [devices['iPhone 13'], devices['iPad (gen 7)'], devices['iPad (gen 7) landscape'], { viewport: { width: 1366, height: 900 } }]) {
     await fixture(async (page, context) => {
@@ -291,7 +318,9 @@ test('responsive touch targets, swipe routing and offline reopen with all assets
       assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth), true);
       await page.getByText('Đã tải đủ tài nguyên để học ngoại tuyến.').waitFor({ timeout: 12000 });
       if (process.env.MICRO_SCREENSHOTS && page.viewportSize().width === 390) {
-        await page.screenshot({ path: join(process.env.MICRO_SCREENSHOTS, engine + '-learn-390.png'), scale: 'css' });
+        await page.locator('[data-coverage="2"]').click();
+        await page.screenshot({ path: join(process.env.MICRO_SCREENSHOTS, engine + '-priority-390.png'), scale: 'css', fullPage: true });
+        await page.locator('[data-coverage="3"]').click();
       }
       if (device.hasTouch) await startScope(page).tap();
       else await startScope(page).click();

@@ -123,3 +123,13 @@ mark { background: #ffed99; color: #241f0b; border-radius: 3px; }
   .focus-session .question { margin-block: 9px; }
   .focus-session .options { margin-block: 8px; }
 }
+#tier-picker { padding-block: 10px; }
+.tier-options { display: flex; flex-wrap: wrap; gap: 6px; margin-block: 5px 8px; }
+.tier-chip { display: flex; align-items: center; gap: 5px; margin: 0; padding: 0 9px; border: 1px solid var(--edge); border-radius: 9px; min-height: 44px; }
+.tier-chip input { width: 18px; min-height: 0; height: 18px; accent-color: var(--accent); }
+.tier-chip:has(input:checked) { background: var(--soft); }
+.tier-breakdown { display: flex; flex-wrap: wrap; gap: 4px 14px; color: var(--muted); font-size: .86rem; }
+.local-scope { border-top: 1px solid var(--edge); padding-top: 5px; }
+#topic-sort { max-width: 22rem; }
+.scope-card { padding: 9px; }
+.scope-children { padding-left: 4px; }
