@@ -7,6 +7,7 @@ const { chromium, webkit, devices } = require('playwright');
 
 let server;
 let url;
+let serverOnline = true;
 const types = {
   '.html': 'text/html', '.js': 'text/javascript', '.css': 'text/css',
   '.png': 'image/png', '.webmanifest': 'application/manifest+json'
@@ -14,6 +15,7 @@ const types = {
 
 before(async () => {
   server = createServer(async (request, response) => {
+    if (!serverOnline) return request.socket.destroy();
     const match = request.url.match(/^\/biochemistry\/([a-z0-9.-]*)$/);
     if (!match) return response.writeHead(404).end();
     const file = match[1] || 'index.html';
@@ -43,13 +45,16 @@ for (const [name, engine, profiles] of [
           const context = await browser.newContext(options);
           try {
             const page = await context.newPage();
+            page.setDefaultTimeout(10000);
             const errors = [];
             page.on('pageerror', error => errors.push(error.message));
             page.on('dialog', dialog => dialog.accept());
             await page.goto(url);
             assert.match(await page.locator('#qTitle').innerText(), /Câu 1 \/ 296/);
             assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), true);
-            await page.locator('#options .opt').first().click();
+            const firstOption = page.locator('#options .opt').first();
+            if (options.hasTouch) await firstOption.tap();
+            else await firstOption.click();
             assert.equal(await page.locator('#feedback').isVisible(), true);
             await page.locator('#markBtn').click();
             await page.locator('#themeBtn').click();
@@ -59,6 +64,7 @@ for (const [name, engine, profiles] of [
             assert.match(await page.locator('#markBtn').innerText(), /Đã đánh dấu/);
             await page.locator('#search').fill('8');
             assert.match(await page.locator('#question .formula').innerText(), /OD₀/);
+            await page.locator('#search').clear();
             await page.locator('[data-mode="study"]').click();
             await page.locator('[data-study-topic]').first().click();
             await page.locator('#checkBtn').click();
@@ -71,6 +77,7 @@ for (const [name, engine, profiles] of [
             await page.locator('[data-mode="stats"]').click();
             assert.equal(await page.locator('#statsArea').isVisible(), true);
             await page.locator('[data-mode="exam"]').click();
+            await page.locator('#examKeyOnly').check();
             await page.locator('#examAction').click();
             await page.locator('#options .opt').first().click();
             await page.reload();
@@ -78,15 +85,13 @@ for (const [name, engine, profiles] of [
             assert.equal(await page.locator('#examAnswered').innerText(), '1');
             await page.locator('#examAction').click();
             assert.equal(await page.locator('#examResult').isVisible(), true);
-            await page.evaluate(async () => {
-              await navigator.serviceWorker.ready;
-            });
             await page.waitForFunction(() => navigator.serviceWorker.controller !== null);
-            await context.setOffline(true);
+            serverOnline = false;
             await page.reload();
             assert.equal(await page.locator('#examResult').isVisible(), true);
             assert.deepEqual(errors, []);
           } finally {
+            serverOnline = true;
             await context.close();
           }
         });

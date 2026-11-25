@@ -28,6 +28,10 @@ npm test
 
 Có thể đặt biến `RC7_ORIGINAL` trỏ đến file RC7 gốc để đối chiếu từng đối tượng câu hỏi, khóa và chủ đề. Bộ kiểm thử mặc định xác minh checksum các tài nguyên đã tách và số lượng bản ghi. Kiểm thử trình duyệt chạy Chromium và WebKit trên hồ sơ desktop và cảm ứng, có các ca tải lại tiến độ, dữ liệu cũ, phiên thi và ngoại tuyến. Hồ sơ iPhone/iPad là giả lập của Playwright. Sau khi xuất bản, kiểm tra lại trên Safari và thao tác Thêm vào màn hình chính bằng thiết bị thật.
 
+Kết quả nghiệm thu ngày 25/11/2026 đạt 10/10 kiểm thử. Chromium chạy desktop và Android. WebKit chạy desktop, iPhone và iPad. Cả hai đọc được tiến độ v4.1, giữ tiến độ sau tải lại và mở lại phiên đã nộp khi máy chủ ngừng phục vụ. Kiểm thử với SHA-256 của RC7 gốc xác nhận từng đối tượng câu hỏi, khóa và chủ đề khớp.
+
+RC7 giữ từ khóa tìm kiếm khi chuyển thẳng từ Luyện tập sang Học. Nếu từ khóa đang lọc hết câu trong chủ đề mới, xóa ô tìm kiếm ở Luyện tập trước khi chuyển sang Học.
+
 ## GitHub Pages
 
 URL dự kiến sau phê duyệt và triển khai là [Hóa Sinh 2 trên GitHub Pages](https://pherohuynhducminh-del.github.io/vi-sinh-trong-tam/biochemistry/). Ứng dụng chỉ cần phục vụ thư mục tĩnh từ gốc site. Các đường dẫn tài nguyên là tương đối.
